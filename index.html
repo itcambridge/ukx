@@ -9,53 +9,69 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --flag-opacity: 0.6;     /* opacity of the MP4 background */
+      --flag-opacity: 0.6;
       --carousel-duration: 5000ms;
       --fade-duration: 1200ms;
       --fg-text: #ffffff;
-      --fg-subtext: #eaeaea;
+      --fg-muted: #cbd5e1;
+      --fg-soft: #a8b3c7;
+      --bg: #0b0c10;
+      --panel: #14161c;
+      --line: #262a33;
       --cta-primary: #1f7ae0;
       --cta-primary-hover: #1863b5;
-      --cta-secondary: rgba(255,255,255,0.15);
-      --cta-secondary-hover: rgba(255,255,255,0.28);
+      --cta-secondary: rgba(255,255,255,0.12);
+      --cta-secondary-hover: rgba(255,255,255,0.22);
+      --accent: #1f7ae0;
+      --ok: #22c55e;
+      --warn: #f59e0b;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--fg-text); background:#0b0c10; overflow-x:hidden;
+      color:var(--fg-text); background:var(--bg); overflow-x:hidden;
+      scroll-behavior:smooth;
     }
+    a{color:#fff; text-decoration:none}
 
-    /* HERO LAYOUT */
-    .hero{
-      position:relative; min-height:100svh; width:100%;
-      display:grid; place-items:center; overflow:hidden;
+    /* NAV */
+    .nav{
+      position:sticky; top:0; z-index:20; backdrop-filter:saturate(160%) blur(8px);
+      background:linear-gradient(to bottom, rgba(10,11,15,.75), rgba(10,11,15,.35));
+      border-bottom:1px solid rgba(255,255,255,.06);
     }
-    /* Background video */
+    .nav__inner{
+      max-width:1200px; margin:0 auto; padding:.6rem 1rem; display:flex; align-items:center; gap:1rem;
+    }
+    .brand{font-weight:800; letter-spacing:.2px}
+    .nav__spacer{flex:1}
+    .nav__links{display:flex; gap:.8rem; flex-wrap:wrap}
+    .chip{
+      padding:.45rem .7rem; border-radius:.6rem; font-size:.9rem; color:#e9eef7;
+      background:var(--cta-secondary); border:1px solid rgba(255,255,255,.18);
+    }
+    .chip:hover{background:var(--cta-secondary-hover)}
+
+    /* HERO */
+    .hero{
+      position:relative; min-height:92svh; display:grid; place-items:center; overflow:hidden;
+    }
     .hero__video{
       position:absolute; inset:0; width:100%; height:100%;
-      object-fit:cover; filter:brightness(0.9); opacity:var(--flag-opacity);
-      z-index:1;
+      object-fit:cover; filter:brightness(0.9); opacity:var(--flag-opacity); z-index:1;
     }
-    /* Dark gradient overlay to improve readability */
-    .hero__shade{
-      position:absolute; inset:0; z-index:2;
+    .hero__shade{ position:absolute; inset:0; z-index:2;
       background: radial-gradient(80% 60% at 50% 40%, rgba(0,0,0,0.10), rgba(0,0,0,0.60));
     }
-    /* Carousel image layer (above video, below text) */
-    .hero__carousel{
-      position:absolute; inset:0; z-index:3; pointer-events:none; overflow:hidden;
-    }
+    .hero__carousel{ position:absolute; inset:0; z-index:3; pointer-events:none; overflow:hidden; }
     .hero__slide{
       position:absolute; inset:0; background-position:center; background-size:cover;
       opacity:0; transition:opacity var(--fade-duration) ease-in-out;
       filter: saturate(1.05) contrast(1.05);
     }
-    .hero__slide.is-active{ opacity:0.95; }
-    .hero__slide.is-prev{ opacity:0; }
-    .hero__slide img{ width:0; height:0; opacity:0; } /* keep it purely CSS bg */
+    .hero__slide.is-active{ opacity:.95; }
 
-    /* Content */
     .hero__content{
       position:relative; z-index:4; text-align:center; padding: clamp(1rem, 4vw, 2rem);
       max-width:min(1100px, 92vw);
@@ -67,60 +83,107 @@
     }
     .hero__title{
       font-weight:800; line-height:1.05; margin:0 0 .6rem 0;
-      font-size:clamp(2rem, 6vw, 4rem);
+      font-size:clamp(2.1rem, 6vw, 4.2rem);
       text-shadow:0 4px 20px rgba(0,0,0,.45);
     }
     .hero__subtitle{
-      margin:0 auto 1.5rem; max-width:60ch; line-height:1.5;
-      color:var(--fg-subtext); font-size:clamp(1rem, 2.2vw, 1.25rem);
-      text-shadow:0 2px 16px rgba(0,0,0,.4);
+      margin:0 auto 1.6rem; max-width:62ch; line-height:1.55;
+      color:var(--fg-muted); font-size:clamp(1rem, 2.2vw, 1.2rem);
+      text-shadow:0 2px 16px rgba(0,0,0,.35);
     }
-    .hero__ctas{
-      display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap;
-    }
+    .hero__ctas{display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap}
+
     .btn{
       appearance:none; border:0; cursor:pointer; font-weight:600;
-      padding:.85rem 1.1rem; border-radius:.75rem; transition:.2s ease;
-      text-decoration:none; color:#fff;
+      padding:.85rem 1.1rem; border-radius:.75rem; transition:.2s ease; color:#fff;
+      display:inline-flex; align-items:center; justify-content:center;
     }
     .btn--primary{ background:var(--cta-primary); }
     .btn--primary:hover{ background:var(--cta-primary-hover); }
-    .btn--ghost{
-      background:var(--cta-secondary); border:1px solid rgba(255,255,255,.28);
-    }
+    .btn--ghost{ background:var(--cta-secondary); border:1px solid rgba(255,255,255,.28); }
     .btn--ghost:hover{ background:var(--cta-secondary-hover); }
 
-    /* Small footer section just to show scroll */
-    section{ padding: 4rem 1rem; max-width:1100px; margin:0 auto; }
-    .muted{ color:#cbd5e1 }
-    .tokenomics{
-      display:grid; gap:1.25rem; grid-template-columns: 1fr;
-    }
-    @media(min-width:900px){
-      .tokenomics{ grid-template-columns: 1.1fr .9fr; }
-    }
-
-    /* fallback note */
     .fallback-note{
       position:absolute; bottom:.5rem; right:.5rem; z-index:5; font-size:.8rem;
       padding:.35rem .6rem; opacity:.75; background:rgba(0,0,0,.35); border-radius:.5rem;
     }
+
+    /* SECTIONS */
+    .section{ padding: clamp(2.5rem, 4.5vw, 4rem) 1rem; }
+    .container{ max-width:1100px; margin:0 auto; }
+    h2{ margin:0 0 .8rem; font-size:clamp(1.6rem, 2.8vw, 2.1rem) }
+
+    .lead{ color:var(--fg-muted); line-height:1.6; }
+    .muted{ color:var(--fg-soft) }
+
+    .cards{ display:grid; gap:1rem; grid-template-columns:1fr; }
+    @media (min-width:900px){ .cards{ grid-template-columns:repeat(3, 1fr) } }
+    .card{
+      background:var(--panel); border:1px solid var(--line); border-radius:.9rem; padding:1rem 1rem;
+    }
+    .card h3{ margin:.2rem 0 .35rem; font-size:1.05rem }
+    .card p{ margin:0; color:var(--fg-muted); line-height:1.55 }
+
+    /* Timeline */
+    .timeline{ border-left:2px solid var(--line); padding-left:1rem; margin-left:.35rem; display:grid; gap:.9rem }
+    .t{ position:relative }
+    .t::before{
+      content:""; position:absolute; left:-1.23rem; top:.35rem; width:.65rem; height:.65rem;
+      background:var(--accent); border-radius:50%;
+      box-shadow:0 0 0 4px rgba(31,122,224,.18);
+    }
+
+    /* FAQ accordion */
+    .faq{ display:grid; gap:.6rem }
+    details.faq__item{
+      background:var(--panel); border:1px solid var(--line); border-radius:.8rem; padding:.8rem 1rem;
+    }
+    details summary{
+      cursor:pointer; list-style:none; font-weight:600; outline:none;
+    }
+    details summary::-webkit-details-marker{ display:none }
+    details[open]{ border-color:#2f3642 }
+
+    /* Whitepaper preview panel */
+    .wp{
+      background:var(--panel); border:1px solid var(--line); border-radius:.9rem; padding:1rem;
+    }
+    .wp__frame{
+      width:100%; height:min(72vh, 760px); border:0; border-radius:.6rem; background:#0e1015;
+    }
+
+    /* Footer */
+    .footer{ border-top:1px solid var(--line); color:var(--fg-soft) }
+    .footer a{ color:#e8eefb }
+    .footer__grid{ display:grid; gap:1rem; grid-template-columns:1fr; }
+    @media(min-width:800px){ .footer__grid{ grid-template-columns: 1fr auto } }
   </style>
 </head>
 <body>
 
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <div class="brand">UKX</div>
+      <div class="nav__spacer"></div>
+      <div class="nav__links">
+        <a class="chip" href="#mission">Mission</a>
+        <a class="chip" href="#buy">How to buy</a>
+        <a class="chip" href="#tokenomics">Tokenomics</a>
+        <a class="chip" href="#whitepaper">Whitepaper</a>
+        <a class="chip" href="#roadmap">Roadmap</a>
+        <a class="chip" href="#faq">FAQ</a>
+      </div>
+    </div>
+  </nav>
+
   <!-- HERO -->
   <header class="hero" aria-label="UKX Hero">
-    <!-- Background video -->
     <video class="hero__video" src="./assets/Union-Jack-Coin.mp4" autoplay muted loop playsinline></video>
     <div class="hero__shade" aria-hidden="true"></div>
 
-    <!-- Carousel layer -->
-    <div class="hero__carousel" aria-hidden="true">
-      <!-- slides are injected by JS -->
-    </div>
+    <div class="hero__carousel" aria-hidden="true"></div>
 
-    <!-- Foreground content -->
     <div class="hero__content">
       <div class="hero__badge">A community-powered token</div>
       <h1 class="hero__title">Union Jack Coin (UKX)</h1>
@@ -130,6 +193,8 @@
       <div class="hero__ctas">
         <a class="btn btn--primary" href="#mission">Join the movement</a>
         <a class="btn btn--ghost" href="#tokenomics">See tokenomics</a>
+        <a class="btn btn--ghost" href="/assets/whitepaper.pdf" target="_blank" rel="noopener">Read whitepaper</a>
+        <a class="btn btn--ghost" id="contractBtn" style="display:none;" target="_blank" rel="noopener">View token contract</a>
       </div>
     </div>
 
@@ -138,34 +203,143 @@
     </div>
   </header>
 
-  <!-- A couple of sections to scroll to -->
-  <section id="mission">
-    <h2>Mission</h2>
-    <p class="muted">
-      UKX gives people a voice and a stake in Britain’s future. Through governance and collective funding, holders decide which causes and projects get supported — from local initiatives to national campaigns.
-    </p>
+  <!-- MISSION -->
+  <section class="section" id="mission">
+    <div class="container">
+      <h2>Mission</h2>
+      <p class="lead">
+        UKX gives people a voice and a stake in Britain’s future. Through governance and collective funding,
+        holders decide which causes and projects get supported — from local initiatives to national campaigns.
+      </p>
+    </div>
   </section>
 
-  <section id="tokenomics">
-    <h2>Tokenomics (Overview)</h2>
-    <div class="tokenomics">
-      <div>
-        <ul class="muted">
-          <li><strong>50%</strong> – Treasury (project funding via votes)</li>
-          <li><strong>20%</strong> – Community Grants & Participation</li>
-          <li><strong>10%</strong> – Development Team (vested)</li>
-          <li><strong>10%</strong> – Marketing & Partnerships</li>
-          <li><strong>10%</strong> – Reserve & Safety</li>
-        </ul>
-      </div>
-      <div class="muted">
-        (Drop your pie-chart image here or embed the one I created earlier.)
+  <!-- HOW TO BUY -->
+  <section class="section" id="buy">
+    <div class="container">
+      <h2>How to buy UKX (testnet → mainnet later)</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>1) Get a wallet</h3>
+          <p>Install MetaMask (desktop or mobile). Keep your seed phrase safe.</p>
+        </div>
+        <div class="card">
+          <h3>2) Add BNB Chain</h3>
+          <p>Switch network to BNB Smart Chain (mainnet). You’ll need a little BNB for gas.</p>
+        </div>
+        <div class="card">
+          <h3>3) Trade for UKX</h3>
+          <p>Use a DEX (e.g., PancakeSwap). Once live, paste the official contract address and swap.</p>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- TOKENOMICS -->
+  <section class="section" id="tokenomics">
+    <div class="container">
+      <h2>Tokenomics (Overview)</h2>
+      <p class="muted">Fixed supply. Burnable (donation = optional burn). Governance controls treasury deployments.</p>
+      <div class="cards">
+        <div class="card">
+          <h3>50% — Treasury</h3>
+          <p>Project funding decided by token-holder votes.</p>
+        </div>
+        <div class="card">
+          <h3>20% — Community</h3>
+          <p>Grants & participation rewards to grow UKX.</p>
+        </div>
+        <div class="card">
+          <h3>10% — Team</h3>
+          <p>Vested allocation to build & ship responsibly.</p>
+        </div>
+        <div class="card">
+          <h3>10% — Marketing</h3>
+          <p>Partnerships, awareness, listings, education.</p>
+        </div>
+        <div class="card">
+          <h3>10% — Reserve</h3>
+          <p>Safety buffer & strategic opportunities.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHITEPAPER -->
+  <section class="section" id="whitepaper">
+    <div class="container">
+      <h2>Whitepaper</h2>
+      <div class="wp">
+        <iframe class="wp__frame" id="wpFrame" title="UKX Whitepaper (PDF preview)"></iframe>
+        <p class="muted" id="wpNote" style="margin:.8rem 0 0">
+          If the PDF preview doesn’t load, you can
+          <a href="/assets/whitepaper.pdf" target="_blank" rel="noopener">download the whitepaper here</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section class="section" id="roadmap">
+    <div class="container">
+      <h2>Roadmap</h2>
+      <div class="timeline">
+        <div class="t">
+          <strong>Phase 1 — Foundation</strong>
+          <div class="muted">Site, brand, token contract (fixed supply + burn), initial community.</div>
+        </div>
+        <div class="t">
+          <strong>Phase 2 — Launch</strong>
+          <div class="muted">DEX listing, fair distribution mechanics, first governance vote.</div>
+        </div>
+        <div class="t">
+          <strong>Phase 3 — Grants & Causes</strong>
+          <div class="muted">Open submissions, voting cycles, transparent funding reports.</div>
+        </div>
+        <div class="t">
+          <strong>Phase 4 — Expansion</strong>
+          <div class="muted">Partnerships, audits, centralized exchange listings (as appropriate).</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="container">
+      <h2>FAQ</h2>
+      <div class="faq">
+        <details class="faq__item">
+          <summary>Is UKX an investment?</summary>
+          <div class="muted">UKX is a community token with governance features. Nothing here is financial advice—always DYOR.</div>
+        </details>
+        <details class="faq__item">
+          <summary>How does burning work?</summary>
+          <div class="muted">Holders can choose to burn tokens (donate power) reducing total supply—benefiting remaining holders by scarcity.</div>
+        </details>
+        <details class="faq__item">
+          <summary>How are projects funded?</summary>
+          <div class="muted">Funds are allocated from the treasury after governance votes. Proposals outline goals, budget and proof-of-impact.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="section footer">
+    <div class="container footer__grid">
+      <div>© <span id="year"></span> UKX — Union Jack Coin</div>
+      <div style="display:flex; gap:.75rem; flex-wrap:wrap">
+        <a href="#" class="chip">Twitter/X</a>
+        <a href="#" class="chip">Telegram</a>
+        <a href="#" class="chip">Discord</a>
+        <a href="https://github.com/itcambridge/ukx" class="chip" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
   <script>
-    // --- CONFIG: edit filenames here if yours differ ---
+    /* ============ CONFIG ============ */
     const imagePaths = [
       "./assets/Belfast.png",
       "./assets/Big_Ben.png",
@@ -176,7 +350,10 @@
       "./assets/Tower_Bridge.png",
     ];
 
-    // Build slides
+    // Set this when you deploy mainnet:
+    const UKX_MAINNET = ""; // e.g. "0xABCDEF0123..."
+
+    /* ============ HERO CAROUSEL ============ */
     const carousel = document.querySelector('.hero__carousel');
     const slides = imagePaths.map((src, i) => {
       const d = document.createElement('div');
@@ -186,7 +363,6 @@
       return d;
     });
 
-    // Fade carousel
     let i = 0;
     setInterval(() => {
       const cur = slides[i];
@@ -197,24 +373,35 @@
     }, parseInt(getComputedStyle(document.documentElement)
         .getPropertyValue('--carousel-duration')) || 5000);
 
-    // Handle cases where video can’t autoplay (browser policy)
+    /* ============ VIDEO AUTOPLAY FALLBACK ============ */
     const video = document.querySelector('.hero__video');
     const fallbackNote = document.getElementById('fallbackNote');
-
-    function handleVideoAutoplay() {
-      if (!video) return;
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => { /* playing fine */ })
-          .catch(() => {
-            // If autoplay fails, hide video and rely on images
-            video.style.display = 'none';
-            fallbackNote.hidden = false;
-          });
+    if (video) {
+      const p = video.play();
+      if (p && typeof p.then === 'function') {
+        p.catch(() => { video.style.display='none'; fallbackNote.hidden=false; });
       }
     }
-    document.addEventListener('DOMContentLoaded', handleVideoAutoplay);
+
+    /* ============ CONTRACT BUTTON (auto) ============ */
+    (function showContractBtn(){
+      if (!UKX_MAINNET) return;
+      const btn = document.getElementById('contractBtn');
+      if (!btn) return;
+      btn.href = `https://bscscan.com/token/${UKX_MAINNET}`;
+      btn.style.display = 'inline-flex';
+    })();
+
+    /* ============ WHITEPAPER PREVIEW ============ */
+    (function loadWhitepaper(){
+      const frame = document.getElementById('wpFrame');
+      if (!frame) return;
+      // Setting src late prevents some browsers from blocking the embed on initial paint
+      frame.src = "/assets/whitepaper.pdf#view=FitH&toolbar=1&navpanes=0";
+    })();
+
+    /* ============ FOOTER YEAR ============ */
+    document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>

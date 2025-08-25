@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UKX – Union Jack Coin</title>
+  <meta name="description" content="UKX is a community-powered token funding projects across Britain." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --flag-opacity: 0.6;     /* opacity of the MP4 background */
+      --carousel-duration: 5000ms;
+      --fade-duration: 1200ms;
+      --fg-text: #ffffff;
+      --fg-subtext: #eaeaea;
+      --cta-primary: #1f7ae0;
+      --cta-primary-hover: #1863b5;
+      --cta-secondary: rgba(255,255,255,0.15);
+      --cta-secondary-hover: rgba(255,255,255,0.28);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--fg-text); background:#0b0c10; overflow-x:hidden;
+    }
+
+    /* HERO LAYOUT */
+    .hero{
+      position:relative; min-height:100svh; width:100%;
+      display:grid; place-items:center; overflow:hidden;
+    }
+    /* Background video */
+    .hero__video{
+      position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover; filter:brightness(0.9); opacity:var(--flag-opacity);
+      z-index:1;
+    }
+    /* Dark gradient overlay to improve readability */
+    .hero__shade{
+      position:absolute; inset:0; z-index:2;
+      background: radial-gradient(80% 60% at 50% 40%, rgba(0,0,0,0.10), rgba(0,0,0,0.60));
+    }
+    /* Carousel image layer (above video, below text) */
+    .hero__carousel{
+      position:absolute; inset:0; z-index:3; pointer-events:none; overflow:hidden;
+    }
+    .hero__slide{
+      position:absolute; inset:0; background-position:center; background-size:cover;
+      opacity:0; transition:opacity var(--fade-duration) ease-in-out;
+      filter: saturate(1.05) contrast(1.05);
+    }
+    .hero__slide.is-active{ opacity:0.95; }
+    .hero__slide.is-prev{ opacity:0; }
+    .hero__slide img{ width:0; height:0; opacity:0; } /* keep it purely CSS bg */
+
+    /* Content */
+    .hero__content{
+      position:relative; z-index:4; text-align:center; padding: clamp(1rem, 4vw, 2rem);
+      max-width:min(1100px, 92vw);
+    }
+    .hero__badge{
+      display:inline-block; padding:.35rem .6rem; font-size:.8rem; letter-spacing:.08em;
+      border:1px solid rgba(255,255,255,.22); border-radius:999px; opacity:.9; margin-bottom:1rem;
+      background:rgba(0,0,0,.25); backdrop-filter: blur(6px);
+    }
+    .hero__title{
+      font-weight:800; line-height:1.05; margin:0 0 .6rem 0;
+      font-size:clamp(2rem, 6vw, 4rem);
+      text-shadow:0 4px 20px rgba(0,0,0,.45);
+    }
+    .hero__subtitle{
+      margin:0 auto 1.5rem; max-width:60ch; line-height:1.5;
+      color:var(--fg-subtext); font-size:clamp(1rem, 2.2vw, 1.25rem);
+      text-shadow:0 2px 16px rgba(0,0,0,.4);
+    }
+    .hero__ctas{
+      display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap;
+    }
+    .btn{
+      appearance:none; border:0; cursor:pointer; font-weight:600;
+      padding:.85rem 1.1rem; border-radius:.75rem; transition:.2s ease;
+      text-decoration:none; color:#fff;
+    }
+    .btn--primary{ background:var(--cta-primary); }
+    .btn--primary:hover{ background:var(--cta-primary-hover); }
+    .btn--ghost{
+      background:var(--cta-secondary); border:1px solid rgba(255,255,255,.28);
+    }
+    .btn--ghost:hover{ background:var(--cta-secondary-hover); }
+
+    /* Small footer section just to show scroll */
+    section{ padding: 4rem 1rem; max-width:1100px; margin:0 auto; }
+    .muted{ color:#cbd5e1 }
+    .tokenomics{
+      display:grid; gap:1.25rem; grid-template-columns: 1fr;
+    }
+    @media(min-width:900px){
+      .tokenomics{ grid-template-columns: 1.1fr .9fr; }
+    }
+
+    /* fallback note */
+    .fallback-note{
+      position:absolute; bottom:.5rem; right:.5rem; z-index:5; font-size:.8rem;
+      padding:.35rem .6rem; opacity:.75; background:rgba(0,0,0,.35); border-radius:.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <header class="hero" aria-label="UKX Hero">
+    <!-- Background video -->
+    <video class="hero__video" src="./assets/Union-Jack-Coin.mp4" autoplay muted loop playsinline></video>
+    <div class="hero__shade" aria-hidden="true"></div>
+
+    <!-- Carousel layer -->
+    <div class="hero__carousel" aria-hidden="true">
+      <!-- slides are injected by JS -->
+    </div>
+
+    <!-- Foreground content -->
+    <div class="hero__content">
+      <div class="hero__badge">A community-powered token</div>
+      <h1 class="hero__title">Union Jack Coin (UKX)</h1>
+      <p class="hero__subtitle">
+        A token of unity funding projects across Britain. Holders propose, vote, and direct the treasury to real-world causes.
+      </p>
+      <div class="hero__ctas">
+        <a class="btn btn--primary" href="#mission">Join the movement</a>
+        <a class="btn btn--ghost" href="#tokenomics">See tokenomics</a>
+      </div>
+    </div>
+
+    <div class="fallback-note" id="fallbackNote" hidden>
+      Video paused. Showing image gallery.
+    </div>
+  </header>
+
+  <!-- A couple of sections to scroll to -->
+  <section id="mission">
+    <h2>Mission</h2>
+    <p class="muted">
+      UKX gives people a voice and a stake in Britain’s future. Through governance and collective funding, holders decide which causes and projects get supported — from local initiatives to national campaigns.
+    </p>
+  </section>
+
+  <section id="tokenomics">
+    <h2>Tokenomics (Overview)</h2>
+    <div class="tokenomics">
+      <div>
+        <ul class="muted">
+          <li><strong>50%</strong> – Treasury (project funding via votes)</li>
+          <li><strong>20%</strong> – Community Grants & Participation</li>
+          <li><strong>10%</strong> – Development Team (vested)</li>
+          <li><strong>10%</strong> – Marketing & Partnerships</li>
+          <li><strong>10%</strong> – Reserve & Safety</li>
+        </ul>
+      </div>
+      <div class="muted">
+        (Drop your pie-chart image here or embed the one I created earlier.)
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // --- CONFIG: edit filenames here if yours differ ---
+    const imagePaths = [
+      "./assets/Belfast.png",
+      "./assets/Big_Ben.png",
+      "./assets/Cardiff.png",
+      "./assets/cornwall.png",
+      "./assets/dorset.png",
+      "./assets/Edinburgh.png",
+      "./assets/Tower_Bridge.png",
+    ];
+
+    // Build slides
+    const carousel = document.querySelector('.hero__carousel');
+    const slides = imagePaths.map((src, i) => {
+      const d = document.createElement('div');
+      d.className = 'hero__slide' + (i === 0 ? ' is-active' : '');
+      d.style.backgroundImage = `url("${src}")`;
+      carousel.appendChild(d);
+      return d;
+    });
+
+    // Fade carousel
+    let i = 0;
+    setInterval(() => {
+      const cur = slides[i];
+      const next = slides[(i + 1) % slides.length];
+      cur.classList.remove('is-active');
+      next.classList.add('is-active');
+      i = (i + 1) % slides.length;
+    }, parseInt(getComputedStyle(document.documentElement)
+        .getPropertyValue('--carousel-duration')) || 5000);
+
+    // Handle cases where video can’t autoplay (browser policy)
+    const video = document.querySelector('.hero__video');
+    const fallbackNote = document.getElementById('fallbackNote');
+
+    function handleVideoAutoplay() {
+      if (!video) return;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => { /* playing fine */ })
+          .catch(() => {
+            // If autoplay fails, hide video and rely on images
+            video.style.display = 'none';
+            fallbackNote.hidden = false;
+          });
+      }
+    }
+    document.addEventListener('DOMContentLoaded', handleVideoAutoplay);
+  </script>
+</body>
+</html>
