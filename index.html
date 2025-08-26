@@ -157,6 +157,28 @@
     .footer a{ color:#e8eefb }
     .footer__grid{ display:grid; gap:1rem; grid-template-columns:1fr; }
     @media(min-width:800px){ .footer__grid{ grid-template-columns: 1fr auto } }
+
+    /* --- Treasury styles --- */
+    .treasury { padding: 4rem 1rem; max-width:1100px; margin:0 auto; }
+    .treasury h2 { margin-bottom:.25rem; }
+    .treasury .muted { margin:0 0 1.25rem; }
+    .treasury-grid { display:grid; gap:1rem; grid-template-columns:1fr; }
+    @media (min-width: 900px){ .treasury-grid{ grid-template-columns: 1fr 1fr; } }
+    .treasury-card{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:16px; padding:1rem 1.25rem;
+    }
+    .treasury-addr{
+      font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      letter-spacing:.02em; margin:.35rem 0 .75rem;
+    }
+    .treasury-btns{ display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.5rem; }
+    .treasury-badges{ display:flex; gap:.5rem; flex-wrap:wrap; margin:.5rem 0 1rem; }
+    .treasury-badge{
+      display:inline-block; padding:.35rem .6rem; border-radius:999px;
+      border:1px solid rgba(255,255,255,.18); font-size:.9rem;
+    }
   </style>
 </head>
 <body>
@@ -171,6 +193,7 @@
         <a class="chip" href="#buy">How to buy</a>
         <a class="chip" href="#tokenomics">Tokenomics</a>
         <a class="chip" href="#whitepaper">Whitepaper</a>
+        <a class="chip" href="#treasury">Treasury</a>
         <a class="chip" href="#roadmap">Roadmap</a>
         <a class="chip" href="#faq">FAQ</a>
       </div>
@@ -275,9 +298,42 @@
       <div class="wp">
         <iframe class="wp__frame" id="wpFrame" title="UKX Whitepaper (PDF preview)"></iframe>
         <p class="muted" id="wpNote" style="margin:.8rem 0 0">
-          If the PDF preview doesn’t load, you can
+          If the PDF preview doesn't load, you can
           <a href="/assets/whitepaper.pdf" target="_blank" rel="noopener">download the whitepaper here</a>.
         </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TREASURY -->
+  <section id="treasury" class="treasury">
+    <h2>Treasury</h2>
+    <p class="muted">The UnionJackCoin treasury is a multi-sig Safe on BNB Chain. Balances below refresh from chain.</p>
+
+    <div class="treasury-grid">
+      <!-- Address + links -->
+      <div class="treasury-card">
+        <h3>Address</h3>
+        <div class="treasury-addr" id="treasury-address">0x4d0A…3Ef4</div>
+        <div class="treasury-btns">
+          <button class="btn btn--ghost" id="copy-safe">Copy address</button>
+          <a class="btn btn--ghost" target="_blank" rel="noopener"
+             href="https://bscscan.com/address/0x4d0AF0A62e3C72Bb6a8030B84A2c6f2f21803Ef4">View on BscScan</a>
+          <a class="btn btn--ghost" target="_blank" rel="noopener"
+             href="https://app.safe.global/home?safe=bnb:0x4d0AF0A62e3C72Bb6a8030B84A2c6f2f21803Ef4">Open in Safe</a>
+        </div>
+        <p class="muted" style="margin-top:.75rem">Safe: <strong>UnionJackCoin</strong> (BNB Chain)</p>
+      </div>
+
+      <!-- Live balances -->
+      <div class="treasury-card">
+        <h3>Balances (live)</h3>
+        <div class="treasury-badges">
+          <span class="treasury-badge">BNB: <span id="treasury-bnb">—</span></span>
+          <span class="treasury-badge">USDC: <span id="treasury-usdc">—</span></span>
+        </div>
+        <button class="btn btn--primary" id="refresh-bal">Refresh</button>
+        <p class="muted" style="margin-top:.5rem">Data updates on load and every 60s via a public BNB RPC.</p>
       </div>
     </div>
   </section>
@@ -405,6 +461,63 @@
 
     /* ============ FOOTER YEAR ============ */
     document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.11.1/dist/ethers.min.js"></script>
+  <script>
+  (() => {
+    const SAFE_ADDR = "0x4d0AF0A62e3C72Bb6a8030B84A2c6f2f21803Ef4";
+    const USDC_ADDR = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"; // BSC-Peg USDC
+    const provider = new ethers.JsonRpcProvider("https://bsc-dataseed.binance.org");
+
+    // Show a compact address immediately
+    const addrEl = document.getElementById("treasury-address");
+    if (addrEl) addrEl.textContent = SAFE_ADDR.slice(0,6) + "…" + SAFE_ADDR.slice(-4);
+
+    async function refreshBalances(){
+      const bnbEl  = document.getElementById("treasury-bnb");
+      const usdcEl = document.getElementById("treasury-usdc");
+      if (bnbEl)  bnbEl.textContent  = "…";
+      if (usdcEl) usdcEl.textContent = "…";
+
+      try {
+        const erc20 = new ethers.Contract(
+          USDC_ADDR,
+          [
+            "function balanceOf(address) view returns (uint256)",
+            "function decimals() view returns (uint8)",
+            "function symbol() view returns (string)"
+          ],
+          provider
+        );
+
+        const [bnbWei, usdcRaw, dec, sym] = await Promise.all([
+          provider.getBalance(SAFE_ADDR),
+          erc20.balanceOf(SAFE_ADDR),
+          erc20.decimals(),
+          erc20.symbol()
+        ]);
+
+        const bnb  = Number(ethers.formatEther(bnbWei));
+        const usdc = Number(ethers.formatUnits(usdcRaw, dec));
+
+        if (bnbEl)  bnbEl.textContent  = bnb.toFixed(6)  + " BNB";
+        if (usdcEl) usdcEl.textContent = usdc.toFixed(4) + " " + sym;
+      } catch (e) {
+        console.error("Treasury refresh error:", e);
+        if (bnbEl)  bnbEl.textContent  = "unavailable";
+        if (usdcEl) usdcEl.textContent = "unavailable";
+      }
+    }
+
+    document.getElementById("copy-safe")?.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(SAFE_ADDR); alert("Address copied"); } catch {}
+    });
+    document.getElementById("refresh-bal")?.addEventListener("click", refreshBalances);
+
+    window.addEventListener("DOMContentLoaded", refreshBalances);
+    setInterval(refreshBalances, 60_000);
+  })();
   </script>
 </body>
 </html>
