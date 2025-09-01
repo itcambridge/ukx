@@ -1,2 +1,44 @@
 Metamask wallet - 0x656CE2FDdF3080bd79DF77182b8222F8341406B7
 Chainstack API - a9mf8Qxw.wILFOjnuROgwxa4KHa8n0R1szKzAnes3
+Contract address - 0x62728c34A785F3A4BC8cF1705C04d0107eB0dFF9
+
+
+Fee Level
+0.01%
+0.05%
+0.25%
+1%
+Set Starting Price
+chain-56
+9999
+UJC
+Set Price Range
+Min Price
+
+0
+
+UJC = 1 USDC
+Max Price
+
+∞
+
+UJC = 1 USDC
+10%
+20%
+50%
+Full Range
+Custom
+%
+Deposit Amount
+321.557825
+300
+
+USDC logochain-56
+USDC
+BNB Chain
+~300.00
+USD
+ 
+3000000
+2999990
+

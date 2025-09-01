@@ -1,0 +1,16 @@
+{
+  "name": "ujc-platform",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd web && npm run dev",
+    "build": "cd web && npm run build",
+    "db:migrate": "supabase db push",
+    "functions:deploy": "supabase functions deploy",
+    "functions:serve": "supabase functions serve",
+    "setup": "npm install && cd web && npm install"
+  },
+  "devDependencies": {
+    "supabase": "^1.100.1"
+  }
+}

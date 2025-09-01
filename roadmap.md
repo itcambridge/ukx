@@ -1,262 +1,213 @@
-Cline-ready task list (bite-sized issues)
+# UJC MVP – Roadmap
 
+**Scope:** Build a minimal, shippable MVP on top of the existing landing page. Wallet auth, projects, comments, voting (off‑chain), manual donations logging, and manual staffing controlled by project owners. Supabase for data + Edge Functions for verification.
 
+---
 
-Use these as separate Cline tasks; each has a file path and acceptance criteria.
+## Guiding Principles
 
+* **Keep it simple**: manual off‑chain staffing, owner decisions, minimal moderation.
+* **Wallet‑first**: SIWE‑style message signing, no passwords.
+* **Trust through clarity**: signed payloads, visible audit trails, simple RLS.
+* **Iterate**: ship read paths before write paths; add features behind small flags.
 
+---
 
-✅ Web content \& structure
+## High‑Level Phases
 
+1. **Foundation** – Supabase schema + auth + Edge scaffolding
+2. **Projects (Read)** – list/detail with basic stats
+3. **Projects (Write)** – create/approve pipeline
+4. **Community** – comments + off‑chain voting
+5. **Donations (Manual)** – UI + tx hash capture + totals
+6. **Staffing (Manual)** – roles JSON + applications + owner decisions
+7. **Polish & QA** – empty states, RLS, rate limits, instrumentation
 
+---
 
-Add Whitepaper CTA + page link
+## Phase 0 – Prep (0.5 day)
 
+* ✅ Confirm environments: Supabase project, service role key, anon key, Edge Functions enabled
+* ✅ Choose environment variables strategy (local `.env`, prod secrets)
+* ✅ Repo structure: `/web` (frontend), `/supabase` (migrations), `/functions` (edge)
+* ✅ Define fixed taxonomies: Categories (Environment, Education, Community, Health, Arts), Regions (UK‑wide, England, Scotland, Wales, Northern Ireland)
 
+**Deliverables**: Project skeleton with env scaffolding, README with run commands.
 
-File: /var/www/ukx/index.html
+---
 
+## Phase 1 – Foundation (1–2 days)
 
+### 1.1 Database & RLS
 
-Change: Ensure hero CTA links to /whitepaper.html.
+* Create tables: `profiles`, `projects`, `comments`, `proposals`, `votes`, `donations`, `staff_applications`
+* Minimal RLS:
 
+  * `projects`: public select where status = 'live'; owner can insert/update own drafts/pending; admin can set status
+  * `comments`: public select where status = 'visible'; author insert; admin sets status
+  * `votes`: insert via Edge only; public select
+  * `donations`: insert via Edge only (or restricted RPC); public select
+  * `staff_applications`: author insert; project owner update status
 
+**Acceptance**: SQL migration runs clean; RLS tested with anon vs service role.
 
-Done when: Button opens that page; nav includes a “Whitepaper” link.
+### 1.2 Auth & Session
 
+* Wallet connect (ethers v5)
+* SIWE‑style login: sign message → Edge function verifies → returns JWT (Supabase Auth) or store minimal session locally
+* Profile bootstrap on first login (create `profiles` row)
 
+**Acceptance**: Can connect wallet, sign in, and see profile row created.
 
-Publish Whitepaper PDF
+### 1.3 Edge Function Scaffolding
 
+* `create-project` (verify signature, insert as `pending`)
+* `submit-votes` (verify vote signature, upsert)
+* `submit-donation` (manual submission with tx hash; mark `confirmed=false`)
+* (Optional) `apply-role` / `decide-role`
 
+**Acceptance**: Functions deploy and respond with 200 for valid payloads.
 
-Files: /var/www/ukx/whitepaper.html → generate /assets/Whitepaper.pdf via wkhtmltopdf.
+---
 
+## Phase 2 – Projects (Read) (1–2 days)
 
+### 2.1 Projects Index
 
-Done when: https://union-jack.uk/assets/Whitepaper.pdf returns a full-sized PDF (not 5.4KB).
+* Route `/projects`
+* List cards: cover, title, summary, chips (region/cause), status
+* Filters: Category, Region, Status; Search by title/summary
 
+### 2.2 Project Detail
 
+* Route `/projects/:slug`
+* Sections: hero (title, owner, chips), description, images
+* Sidebar: placeholder Donate panel, placeholder Vote panel, Stats (computed)
 
-Submit a Cause page
+**Acceptance**: Index renders with filters; detail renders existing seeded project.
 
+---
 
+## Phase 3 – Projects (Write) (1–2 days)
 
-File: /var/www/ukx/submit.html
+### 3.1 Create Project Wizard
 
+* Step 1: Basics (title, summary, category, region)
+* Step 2: Details (description, beneficiary address, cover image upload)
+* Step 3: Review → **Sign & Submit** (`PROJECT_CREATE_V1`)
 
+### 3.2 Moderation
 
-Content: A simple description + an embedded Google Form (or Formspree) collecting: name, email (optional), project title, location, budget, milestones, impact.
+* `/admin/moderation` (guarded by simple admin flag): list pending projects
+* Actions: Approve (→ `live`), Reject
 
+**Acceptance**: Creator can submit; admin can approve; project appears publicly.
 
+---
 
-Done when: Link from nav works; form submits successfully.
+## Phase 4 – Community (1–2 days)
 
+### 4.1 Comments (Pending → Visible)
 
+* Comment form (rate‑limited client side)
+* Edge validates minimal length; insert as `pending` for first‑time commenters
+* Admin toggle status in moderation view
 
-Add SEO essentials
+### 4.2 Off‑Chain Voting (Project‑linked optional)
 
+* `/governance` page listing proposals
+* Vote: sign message; Edge verifies; upsert `votes`
+* Detail page shows proposal result bars (for closed) or selection (for user)
 
+**Acceptance**: Can post comment (pending), admin approves; can vote on a demo proposal.
 
-Files: /var/www/ukx/robots.txt, /var/www/ukx/sitemap.xml
+---
 
+## Phase 5 – Donations (Manual) (1 day)
 
+### 5.1 Donate UI
 
-robots: allow all; Sitemap: https://union-jack.uk/sitemap.xml
+* Sidebar panel: amount input (UJC), external transfer instructions (contract address)
+* Field to paste `tx_hash`; submit to `submit-donation`
 
+### 5.2 Totals & Activity
 
+* Project detail shows total UJC donated, last 5 donations (address, amount, time, confirmed badge)
+* Admin option to mark `confirmed=true` (until indexer exists)
 
-sitemap: include /, /whitepaper.html, /submit.html
+**Acceptance**: Donation entries appear and totals update; confirmation toggle works.
 
+---
 
+## Phase 6 – Staffing (Manual) (1–2 days)
 
-Done when: Both URLs return 200.
+### 6.1 Roles (Project Owner)
 
+* On project edit, owner toggles **Staffing enabled** and manages `roles` (JSON): `{id,title,skill,comp_ujc,status}`
+* Visible as list on project detail with "Apply" buttons
 
+### 6.2 Applications
 
-Open Graph + social preview
+* Apply modal: bid amount + pitch → sign simple message → submit to Edge → insert `staff_applications`
+* Owner view: list applicants per role; set `accepted/rejected`
+* (Manual payment note; store optional `payment_tx_hash` later)
 
+**Acceptance**: Users can apply; owner can accept; status is visible.
 
+---
 
-File: /var/www/ukx/index.html <head>
+## Phase 7 – Polish & QA (1–2 days)
 
+* Empty states and loading skeletons
+* Basic analytics logging (page views, actions)
+* Edge rate‑limits: comments (1/min), projects (max 2 live/creator), applications (10/day)
+* Input validation & sanitization (lengths, profanity filter on comments)
+* Accessibility pass: labels, focus order, contrast
+* Content QA: taxonomy chips, 404s, error toasts
 
+**Acceptance**: Manual QA checklist passes; smoke test across Chrome/Firefox/Safari + mobile.
 
-Add: og:title, og:description, og:image (pick one hero still), twitter:card=summary\_large\_image.
+---
 
+## Milestones & Checkpoints
 
+* **M1 (End Phase 2)**: Public projects browsing working
+* **M2 (End Phase 3)**: Create → approve → live flow
+* **M3 (End Phase 4)**: Comments + Voting live
+* **M4 (End Phase 5)**: Donations UI & totals
+* **M5 (End Phase 6)**: Manual staffing end‑to‑end
 
-Done when: https://metatags.io/ (or similar) shows correct preview.
+---
 
+## Non‑Goals (for MVP)
 
+* On‑chain escrow for staffing or donations
+* Reputation/points system
+* Real‑time sockets for live updates
+* Full email/password auth
+* Complex moderation queues
 
-Analytics
+---
 
+## Risks & Mitigations
 
+* **Bot spam** → Signed messages, rate‑limits, first‑comment moderation
+* **Low liquidity** → Clear disclaimers; focus on contribution over speculation
+* **Manual confirmation load** → Keep donations volume manageable; plan for indexer later
+* **User confusion** → Simple tooltips, short help modals on key flows
 
-File: /var/www/ukx/index.html
+---
 
+## Definition of Done (MVP)
 
+* Users can: sign in, create projects, see them approved and live, comment (after approval), vote on at least one proposal, donate UJC with tx hash capture, apply for roles; owners can accept applications. All persisted in Supabase with RLS.
 
-Add: Plausible or GA4 snippet.
+---
 
+## Post‑MVP Backlog (next iteration)
 
-
-Done when: Pageview shows in dashboard.
-
-
-
-✅ Nginx/server
-
-
-
-Static caching for media
-
-
-
-File: /etc/nginx/sites-enabled/ukx
-
-
-
-Add inside HTTPS server block:
-
-
-
-location ~\* \\.(?:png|jpg|jpeg|gif|webp|svg|mp4)$ {
-
-&nbsp; add\_header Cache-Control "public, max-age=2592000, immutable";
-
-}
-
-
-
-
-
-Done when: curl -I shows Cache-Control.
-
-
-
-Remove .git from web root
-
-
-
-Cmd: sudo rm -rf /var/www/ukx/.git
-
-
-
-Done when: ls -a /var/www/ukx shows no .git.
-
-
-
-Renewal test
-
-
-
-Cmd: sudo certbot renew --dry-run
-
-
-
-Done when: Success message; no Nginx reload errors.
-
-
-
-✅ Smart contract \& governance (prep)
-
-
-
-Repo folder for contracts \& docs
-
-
-
-Files: contracts/UKXToken.sol, contracts/README.md
-
-
-
-Content: Final ERC20Burnable Ownable implementation notes, deployment checklist, constructor args.
-
-
-
-Done when: Sol compiles in Remix/Hardhat; README explains supply \& distribution.
-
-
-
-Addresses JSON for the site
-
-
-
-File: /var/www/ukx/addresses.json
-
-
-
-Content: { "token":"", "treasury":"", "lp":"", "snapshot":"", "pair":"", "chain":"bsc" }
-
-
-
-Site: Small JS reads it to populate CTAs/links.
-
-
-
-Done when: After deployment, just update JSON and site reflects new links.
-
-
-
-“How to buy” section polish
-
-
-
-File: /var/www/ukx/index.html
-
-
-
-Content: Steps + post-deploy contract address placeholder.
-
-
-
-Done when: Text is clear; contract button auto-reveals from addresses.json.
-
-
-
-
-
-Go-live checklist (day-of)
-
-
-
-&nbsp;Whitepaper page renders + PDF downloads.
-
-
-
-&nbsp;Contract deployed \& verified on BscScan.
-
-
-
-&nbsp;Site shows contract, treasury Safe, DEX pair links.
-
-
-
-&nbsp;Liquidity seeded; pair tradable.
-
-
-
-&nbsp;Snapshot “space” live (even with placeholder).
-
-
-
-&nbsp;Submit form working.
-
-
-
-&nbsp;Domain canonical redirects working (we fixed most; OK to circle back on www.unionjackcoins.co.uk).
-
-
-
-&nbsp;Analytics receiving traffic.
-
-
-
-&nbsp;~/deploy.sh works.
-
-
-
-&nbsp;Socials linked; pinned tweet/post with contract address.
-
+* Donation Router + event indexer to auto‑confirm donations
+* Reputation badges (completions, helpful comments, donors)
+* Snapshot‑compatible typed data voting (EIP‑712)
+* Advanced filters (trending, most donated, near goal)
+* Admin metrics dashboard (projects in funnel, approvals, donations/week)

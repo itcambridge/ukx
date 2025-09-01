@@ -1,0 +1,19 @@
+{
+  "functions": [
+    {
+      "name": "create-project",
+      "path": "../functions/create-project",
+      "verify_jwt": false
+    },
+    {
+      "name": "submit-votes",
+      "path": "../functions/submit-votes",
+      "verify_jwt": false
+    },
+    {
+      "name": "submit-donation",
+      "path": "../functions/submit-donation",
+      "verify_jwt": false
+    }
+  ]
+}

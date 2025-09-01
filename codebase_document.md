@@ -1,12 +1,12 @@
-# UKX Website Documentation
+# UJC Website Documentation
 
 ## Overview
 
-The UKX (Union Jack Coin) website is a simple, static website that serves as the landing page for the UKX cryptocurrency token. The site is built with a focus on simplicity and performance, using vanilla HTML, CSS, and JavaScript without any frameworks or build tools.
+The UJC (Union Jack Coin) website is a simple, static website that serves as the landing page for the UJC cryptocurrency token. The site is built with a focus on simplicity and performance, using vanilla HTML, CSS, and JavaScript without any frameworks or build tools.
 
 - **Technology Stack**: HTML5, CSS3, Vanilla JavaScript
 - **Hosting**: Linode server (accessible at unionjackcoins.co.uk)
-- **Repository**: GitHub (https://github.com/itcambridge/ukx)
+- **Repository**: GitHub (https://github.com/itcambridge/ujc)
 
 ## Build & Deployment Process
 
@@ -93,7 +93,7 @@ The site includes minimal JavaScript for essential functionality:
    - To update carousel images, modify the `imagePaths` array in the JavaScript section
 
 3. **Updating the Contract Address**:
-   - When the token launches on mainnet, update the `UKX_MAINNET` variable in the JavaScript section
+   - When the token launches on mainnet, update the `UJC_MAINNET` variable in the JavaScript section
 
 4. **Whitepaper Updates**:
    - Replace the PDF file in the assets directory (keep the same filename)
