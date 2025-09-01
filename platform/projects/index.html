@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="UJC Platform - Discover and support projects across Britain">
+  <meta name="theme-color" content="#0b0c10">
+  <title>Projects - UJC Platform</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --fg-text: #ffffff;
+      --fg-muted: #cbd5e1;
+      --fg-soft: #a8b3c7;
+      --bg: #0b0c10;
+      --panel: #14161c;
+      --line: #262a33;
+      --cta-primary: #1f7ae0;
+      --cta-primary-hover: #1863b5;
+      --cta-secondary: rgba(255,255,255,0.12);
+      --cta-secondary-hover: rgba(255,255,255,0.22);
+      --accent: #1f7ae0;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--fg-text); background:var(--bg); overflow-x:hidden;
+      scroll-behavior:smooth;
+    }
+    a{color:#fff; text-decoration:none}
+
+    /* NAV */
+    .nav{
+      position:sticky; top:0; z-index:20; backdrop-filter:saturate(160%) blur(8px);
+      background:linear-gradient(to bottom, rgba(10,11,15,.75), rgba(10,11,15,.35));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .nav__inner{
+      max-width:1200px; margin:0 auto; padding:.6rem 1rem; display:flex; align-items:center; gap:1rem;
+    }
+    .brand{font-weight:800; letter-spacing:.2px}
+    .nav__spacer{flex:1}
+    .nav__links{display:flex; gap:.8rem; flex-wrap:wrap}
+    .chip{
+      padding:.45rem .7rem; border-radius:.6rem; font-size:.9rem; color:#e9eef7;
+      background:var(--cta-secondary); border:1px solid rgba(255,255,255,.18);
+    }
+    .chip:hover{background:var(--cta-secondary-hover)}
+
+    /* MAIN CONTENT */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 800;
+    }
+
+    .section-description {
+      color: var(--fg-muted);
+      margin-bottom: 2rem;
+      max-width: 800px;
+    }
+
+    /* FILTERS */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-label {
+      font-size: 0.9rem;
+      color: var(--fg-muted);
+    }
+
+    .filter-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .filter-option {
+      padding: 0.35rem 0.7rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      background: var(--cta-secondary);
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-option:hover {
+      background: var(--cta-secondary-hover);
+    }
+
+    .filter-option.active {
+      background: var(--cta-primary);
+      border-color: var(--cta-primary);
+    }
+
+    .search-container {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.6rem 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      font-family: inherit;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--cta-primary);
+    }
+
+    /* PROJECT GRID */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .project-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+    }
+
+    .project-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .project-content {
+      padding: 1.25rem;
+    }
+
+    .project-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .project-description {
+      color: var(--fg-muted);
+      font-size: 0.95rem;
+      margin: 0 0 1rem 0;
+      line-height: 1.5;
+    }
+
+    .project-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.85rem;
+      color: var(--fg-soft);
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .project-tag {
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.4rem;
+      font-size: 0.75rem;
+      background: rgba(255,255,255,0.05);
+      color: var(--fg-muted);
+    }
+
+    .project-progress {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .project-progress-bar {
+      height: 100%;
+      background: var(--accent);
+    }
+
+    .project-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--fg-muted);
+    }
+
+    /* AUTH CONTAINER */
+    #auth-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .user-address {
+      padding: 0.45rem 0.7rem;
+      border-radius: 0.6rem;
+      font-size: 0.9rem;
+      background: var(--cta-primary);
+      color: white;
+      font-family: monospace;
+    }
+
+    .btn{
+      appearance:none; border:0; cursor:pointer; font-weight:600;
+      padding:.85rem 1.1rem; border-radius:.75rem; transition:.2s ease; color:#fff;
+      display:inline-flex; align-items:center; justify-content:center;
+    }
+    .btn--primary{ background:var(--cta-primary); }
+    .btn--primary:hover{ background:var(--cta-primary-hover); }
+    .btn--ghost{ background:var(--cta-secondary); border:1px solid rgba(255,255,255,.28); }
+    .btn--ghost:hover{ background:var(--cta-secondary-hover); }
+
+    .create-project-btn {
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="/" class="brand">UJC</a>
+      <div class="nav__spacer"></div>
+      <div class="nav__links">
+        <a class="chip" href="/platform/projects" style="background: var(--cta-primary);">Projects</a>
+        <a class="chip" href="/platform/governance">Governance</a>
+        <div id="auth-container">
+          <!-- Auth button will be inserted here -->
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <h1 class="section-title">Projects</h1>
+    <p class="section-description">Discover and support community-driven projects across Britain. Connect your wallet to create your own project or donate to existing ones.</p>
+    
+    <button class="btn btn--primary create-project-btn">Create New Project</button>
+    
+    <!-- FILTERS -->
+    <div class="filters">
+      <div class="filter-group">
+        <div class="filter-label">Category</div>
+        <div class="filter-options">
+          <div class="filter-option active">All</div>
+          <div class="filter-option">Environment</div>
+          <div class="filter-option">Education</div>
+          <div class="filter-option">Community</div>
+          <div class="filter-option">Health</div>
+          <div class="filter-option">Arts</div>
+        </div>
+      </div>
+      
+      <div class="filter-group">
+        <div class="filter-label">Region</div>
+        <div class="filter-options">
+          <div class="filter-option active">All</div>
+          <div class="filter-option">UK-wide</div>
+          <div class="filter-option">England</div>
+          <div class="filter-option">Scotland</div>
+          <div class="filter-option">Wales</div>
+          <div class="filter-option">Northern Ireland</div>
+        </div>
+      </div>
+      
+      <div class="filter-group">
+        <div class="filter-label">Status</div>
+        <div class="filter-options">
+          <div class="filter-option active">All</div>
+          <div class="filter-option">Active</div>
+          <div class="filter-option">Completed</div>
+        </div>
+      </div>
+      
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="Search projects...">
+      </div>
+    </div>
+    
+    <!-- PROJECT GRID -->
+    <div class="project-grid">
+      <!-- Sample Project 1 -->
+      <div class="project-card">
+        <img src="/assets/Edinburgh.png" alt="Edinburgh Castle" class="project-image">
+        <div class="project-content">
+          <h3 class="project-title">Edinburgh Heritage Restoration</h3>
+          <div class="project-tags">
+            <span class="project-tag">Scotland</span>
+            <span class="project-tag">Community</span>
+          </div>
+          <p class="project-description">Restoring historical landmarks in Edinburgh's Old Town to preserve cultural heritage for future generations.</p>
+          <div class="project-progress">
+            <div class="project-progress-bar" style="width: 75%;"></div>
+          </div>
+          <div class="project-stats">
+            <div>75% funded</div>
+            <div>15,000 UJC</div>
+          </div>
+          <div class="project-meta">
+            <div>By: 0x7a3B...F92c</div>
+            <div>12 donors</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sample Project 2 -->
+      <div class="project-card">
+        <img src="/assets/Cardiff.png" alt="Cardiff Bay" class="project-image">
+        <div class="project-content">
+          <h3 class="project-title">Cardiff Bay Cleanup Initiative</h3>
+          <div class="project-tags">
+            <span class="project-tag">Wales</span>
+            <span class="project-tag">Environment</span>
+          </div>
+          <p class="project-description">Community-led effort to clean up Cardiff Bay and implement sustainable waste management solutions.</p>
+          <div class="project-progress">
+            <div class="project-progress-bar" style="width: 45%;"></div>
+          </div>
+          <div class="project-stats">
+            <div>45% funded</div>
+            <div>9,000 UJC</div>
+          </div>
+          <div class="project-meta">
+            <div>By: 0x3c2D...A81f</div>
+            <div>8 donors</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sample Project 3 -->
+      <div class="project-card">
+        <img src="/assets/Big_Ben.png" alt="London Big Ben" class="project-image">
+        <div class="project-content">
+          <h3 class="project-title">London Youth Education Program</h3>
+          <div class="project-tags">
+            <span class="project-tag">England</span>
+            <span class="project-tag">Education</span>
+          </div>
+          <p class="project-description">Providing after-school STEM education programs for underprivileged youth in London boroughs.</p>
+          <div class="project-progress">
+            <div class="project-progress-bar" style="width: 90%;"></div>
+          </div>
+          <div class="project-stats">
+            <div>90% funded</div>
+            <div>18,000 UJC</div>
+          </div>
+          <div class="project-meta">
+            <div>By: 0x5f1A...B43e</div>
+            <div>24 donors</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sample Project 4 -->
+      <div class="project-card">
+        <img src="/assets/Belfast.png" alt="Belfast City" class="project-image">
+        <div class="project-content">
+          <h3 class="project-title">Belfast Community Gardens</h3>
+          <div class="project-tags">
+            <span class="project-tag">Northern Ireland</span>
+            <span class="project-tag">Community</span>
+            <span class="project-tag">Environment</span>
+          </div>
+          <p class="project-description">Creating urban gardens in Belfast neighborhoods to promote community engagement and sustainable food sources.</p>
+          <div class="project-progress">
+            <div class="project-progress-bar" style="width: 60%;"></div>
+          </div>
+          <div class="project-stats">
+            <div>60% funded</div>
+            <div>12,000 UJC</div>
+          </div>
+          <div class="project-meta">
+            <div>By: 0x9e4F...C72d</div>
+            <div>15 donors</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js" type="application/javascript"></script>
+  <script>
+  (() => {
+    // DOM Elements
+    const authContainer = document.getElementById('auth-container');
+    const filterOptions = document.querySelectorAll('.filter-option');
+    const createProjectBtn = document.querySelector('.create-project-btn');
+    
+    // State
+    let currentAccount = null;
+    
+    // Check if MetaMask is installed
+    const isMetaMaskInstalled = () => {
+      return typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask;
+    };
+    
+    // Initialize wallet connection
+    const initWallet = async () => {
+      if (!isMetaMaskInstalled()) {
+        // Redirect to home page if MetaMask is not installed
+        window.location.href = '/';
+        return;
+      }
+      
+      // Check if already connected
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) {
+          handleAccountsChanged(accounts);
+        } else {
+          // Redirect to home page if not connected
+          window.location.href = '/';
+        }
+      } catch (error) {
+        console.error('Error checking accounts:', error);
+        window.location.href = '/';
+      }
+      
+      // Setup ethereum events
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', () => window.location.reload());
+    };
+    
+    // Handle accounts changed
+    const handleAccountsChanged = (accounts) => {
+      if (accounts.length === 0) {
+        // Disconnected - redirect to home
+        window.location.href = '/';
+      } else if (accounts[0] !== currentAccount) {
+        // Connected or changed account
+        currentAccount = accounts[0];
+        const shortAddress = `${currentAccount.substring(0, 6)}...${currentAccount.substring(38)}`;
+        
+        // Update auth container
+        if (authContainer) {
+          authContainer.innerHTML = `<div class="user-address">${shortAddress}</div>`;
+        }
+        
+        // Check if we're on the right network (BNB Chain)
+        checkNetwork();
+      }
+    };
+    
+    // Check if connected to the right network
+    const checkNetwork = async () => {
+      try {
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        // BNB Chain ID is 0x38 (56 in decimal)
+        if (chainId !== '0x38') {
+          alert('Please connect to BNB Smart Chain to use the platform');
+          // Prompt the user to switch networks
+          switchToBNBChain();
+        }
+      } catch (error) {
+        console.error('Error checking network:', error);
+      }
+    };
+    
+    // Switch to BNB Chain
+    const switchToBNBChain = async () => {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x38' }], // BNB Chain ID
+        });
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0x38',
+                chainName: 'BNB Smart Chain',
+                nativeCurrency: {
+                  name: 'BNB',
+                  symbol: 'BNB',
+                  decimals: 18
+                },
+                rpcUrls: ['https://bsc-dataseed.binance.org/'],
+                blockExplorerUrls: ['https://bscscan.com/']
+              }]
+            });
+          } catch (addError) {
+            console.error('Error adding BNB Chain:', addError);
+          }
+        }
+      }
+    };
+    
+    // Setup filter options
+    filterOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        // Remove active class from siblings
+        const siblings = Array.from(option.parentElement.children);
+        siblings.forEach(sibling => sibling.classList.remove('active'));
+        
+        // Add active class to clicked option
+        option.classList.add('active');
+        
+        // TODO: Filter projects based on selected options
+        // This would be implemented with actual data fetching
+      });
+    });
+    
+    // Setup create project button
+    if (createProjectBtn) {
+      createProjectBtn.addEventListener('click', () => {
+        alert('Create project functionality will be implemented in Phase 3');
+      });
+    }
+    
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', initWallet);
+  })();
+  </script>
+</body>
+</html>

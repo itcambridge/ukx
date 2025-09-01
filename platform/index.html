@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="UJC Platform - Discover and support projects across Britain">
+  <meta name="theme-color" content="#0b0c10">
+  <title>UJC Platform - Union Jack Coin</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --fg-text: #ffffff;
+      --fg-muted: #cbd5e1;
+      --fg-soft: #a8b3c7;
+      --bg: #0b0c10;
+      --panel: #14161c;
+      --line: #262a33;
+      --cta-primary: #1f7ae0;
+      --cta-primary-hover: #1863b5;
+      --cta-secondary: rgba(255,255,255,0.12);
+      --cta-secondary-hover: rgba(255,255,255,0.22);
+      --accent: #1f7ae0;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--fg-text); background:var(--bg); overflow-x:hidden;
+      scroll-behavior:smooth;
+    }
+    a{color:#fff; text-decoration:none}
+
+    /* NAV */
+    .nav{
+      position:sticky; top:0; z-index:20; backdrop-filter:saturate(160%) blur(8px);
+      background:linear-gradient(to bottom, rgba(10,11,15,.75), rgba(10,11,15,.35));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .nav__inner{
+      max-width:1200px; margin:0 auto; padding:.6rem 1rem; display:flex; align-items:center; gap:1rem;
+    }
+    .brand{font-weight:800; letter-spacing:.2px}
+    .nav__spacer{flex:1}
+    .nav__links{display:flex; gap:.8rem; flex-wrap:wrap}
+    .chip{
+      padding:.45rem .7rem; border-radius:.6rem; font-size:.9rem; color:#e9eef7;
+      background:var(--cta-secondary); border:1px solid rgba(255,255,255,.18);
+    }
+    .chip:hover{background:var(--cta-secondary-hover)}
+
+    /* MAIN CONTENT */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      font-weight: 800;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    .card-content {
+      color: var(--fg-muted);
+      line-height: 1.6;
+    }
+
+    .card-content p {
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn{
+      appearance:none; border:0; cursor:pointer; font-weight:600;
+      padding:.85rem 1.1rem; border-radius:.75rem; transition:.2s ease; color:#fff;
+      display:inline-flex; align-items:center; justify-content:center;
+    }
+    .btn--primary{ background:var(--cta-primary); }
+    .btn--primary:hover{ background:var(--cta-primary-hover); }
+    .btn--ghost{ background:var(--cta-secondary); border:1px solid rgba(255,255,255,.28); }
+    .btn--ghost:hover{ background:var(--cta-secondary-hover); }
+
+    /* AUTH CONTAINER */
+    #auth-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .user-address {
+      padding: 0.45rem 0.7rem;
+      border-radius: 0.6rem;
+      font-size: 0.9rem;
+      background: var(--cta-primary);
+      color: white;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="/" class="brand">UJC</a>
+      <div class="nav__spacer"></div>
+      <div class="nav__links">
+        <a class="chip" href="/platform/projects">Projects</a>
+        <a class="chip" href="/platform/governance">Governance</a>
+        <div id="auth-container">
+          <!-- Auth button will be inserted here -->
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <h1 class="section-title">Welcome to UJC Platform</h1>
+    
+    <div class="card">
+      <h2 class="card-title">Projects</h2>
+      <div class="card-content">
+        <p>Discover and support projects across Britain. Connect your wallet to create your own project or donate to existing ones.</p>
+        <a href="/platform/projects" class="chip">Browse Projects</a>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2 class="card-title">Governance</h2>
+      <div class="card-content">
+        <p>Participate in community decisions through our governance system. Vote on proposals and help shape the future of UJC.</p>
+        <a href="/platform/governance" class="chip">View Proposals</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js" type="application/javascript"></script>
+  <script>
+  (() => {
+    // DOM Elements
+    const authContainer = document.getElementById('auth-container');
+    
+    // State
+    let currentAccount = null;
+    
+    // Check if MetaMask is installed
+    const isMetaMaskInstalled = () => {
+      return typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask;
+    };
+    
+    // Initialize wallet connection
+    const initWallet = async () => {
+      if (!isMetaMaskInstalled()) {
+        // Redirect to home page if MetaMask is not installed
+        window.location.href = '/';
+        return;
+      }
+      
+      // Check if already connected
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) {
+          handleAccountsChanged(accounts);
+        } else {
+          // Redirect to home page if not connected
+          window.location.href = '/';
+        }
+      } catch (error) {
+        console.error('Error checking accounts:', error);
+        window.location.href = '/';
+      }
+      
+      // Setup ethereum events
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', () => window.location.reload());
+    };
+    
+    // Handle accounts changed
+    const handleAccountsChanged = (accounts) => {
+      if (accounts.length === 0) {
+        // Disconnected - redirect to home
+        window.location.href = '/';
+      } else if (accounts[0] !== currentAccount) {
+        // Connected or changed account
+        currentAccount = accounts[0];
+        const shortAddress = `${currentAccount.substring(0, 6)}...${currentAccount.substring(38)}`;
+        
+        // Update auth container
+        if (authContainer) {
+          authContainer.innerHTML = `<div class="user-address">${shortAddress}</div>`;
+        }
+        
+        // Check if we're on the right network (BNB Chain)
+        checkNetwork();
+      }
+    };
+    
+    // Check if connected to the right network
+    const checkNetwork = async () => {
+      try {
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        // BNB Chain ID is 0x38 (56 in decimal)
+        if (chainId !== '0x38') {
+          alert('Please connect to BNB Smart Chain to use the platform');
+          // Prompt the user to switch networks
+          switchToBNBChain();
+        }
+      } catch (error) {
+        console.error('Error checking network:', error);
+      }
+    };
+    
+    // Switch to BNB Chain
+    const switchToBNBChain = async () => {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x38' }], // BNB Chain ID
+        });
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0x38',
+                chainName: 'BNB Smart Chain',
+                nativeCurrency: {
+                  name: 'BNB',
+                  symbol: 'BNB',
+                  decimals: 18
+                },
+                rpcUrls: ['https://bsc-dataseed.binance.org/'],
+                blockExplorerUrls: ['https://bscscan.com/']
+              }]
+            });
+          } catch (addError) {
+            console.error('Error adding BNB Chain:', addError);
+          }
+        }
+      }
+    };
+    
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', initWallet);
+  })();
+  </script>
+</body>
+</html>

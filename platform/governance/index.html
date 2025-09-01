@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="UJC Platform - Participate in governance and shape the future of UJC">
+  <meta name="theme-color" content="#0b0c10">
+  <title>Governance - UJC Platform</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --fg-text: #ffffff;
+      --fg-muted: #cbd5e1;
+      --fg-soft: #a8b3c7;
+      --bg: #0b0c10;
+      --panel: #14161c;
+      --line: #262a33;
+      --cta-primary: #1f7ae0;
+      --cta-primary-hover: #1863b5;
+      --cta-secondary: rgba(255,255,255,0.12);
+      --cta-secondary-hover: rgba(255,255,255,0.22);
+      --accent: #1f7ae0;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--fg-text); background:var(--bg); overflow-x:hidden;
+      scroll-behavior:smooth;
+    }
+    a{color:#fff; text-decoration:none}
+
+    /* NAV */
+    .nav{
+      position:sticky; top:0; z-index:20; backdrop-filter:saturate(160%) blur(8px);
+      background:linear-gradient(to bottom, rgba(10,11,15,.75), rgba(10,11,15,.35));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .nav__inner{
+      max-width:1200px; margin:0 auto; padding:.6rem 1rem; display:flex; align-items:center; gap:1rem;
+    }
+    .brand{font-weight:800; letter-spacing:.2px}
+    .nav__spacer{flex:1}
+    .nav__links{display:flex; gap:.8rem; flex-wrap:wrap}
+    .chip{
+      padding:.45rem .7rem; border-radius:.6rem; font-size:.9rem; color:#e9eef7;
+      background:var(--cta-secondary); border:1px solid rgba(255,255,255,.18);
+    }
+    .chip:hover{background:var(--cta-secondary-hover)}
+
+    /* MAIN CONTENT */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 800;
+    }
+
+    .section-description {
+      color: var(--fg-muted);
+      margin-bottom: 2rem;
+      max-width: 800px;
+    }
+
+    /* STATS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      color: var(--fg-muted);
+      font-size: 0.95rem;
+    }
+
+    /* PROPOSALS */
+    .proposals-container {
+      margin-bottom: 2rem;
+    }
+
+    .proposal-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .proposal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .proposal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .proposal-id {
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: var(--fg-soft);
+      padding: 0.25rem 0.5rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: 0.4rem;
+    }
+
+    .proposal-description {
+      color: var(--fg-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .proposal-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--fg-soft);
+    }
+
+    .proposal-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .proposal-status {
+      padding: 0.35rem 0.7rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status-active {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--ok);
+    }
+
+    .status-pending {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warn);
+    }
+
+    .status-closed {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--fg-muted);
+    }
+
+    .proposal-votes {
+      margin-bottom: 1.5rem;
+    }
+
+    .vote-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+    }
+
+    .vote-progress {
+      height: 100%;
+      display: flex;
+    }
+
+    .vote-yes {
+      background: var(--ok);
+    }
+
+    .vote-no {
+      background: #ef4444;
+    }
+
+    .vote-abstain {
+      background: #9ca3af;
+    }
+
+    .vote-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: var(--fg-muted);
+    }
+
+    .vote-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .vote-btn {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .btn-yes {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--ok);
+    }
+
+    .btn-yes:hover {
+      background: rgba(34, 197, 94, 0.3);
+    }
+
+    .btn-no {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .btn-no:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-abstain {
+      background: rgba(156, 163, 175, 0.2);
+      color: #9ca3af;
+    }
+
+    .btn-abstain:hover {
+      background: rgba(156, 163, 175, 0.3);
+    }
+
+    /* AUTH CONTAINER */
+    #auth-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .user-address {
+      padding: 0.45rem 0.7rem;
+      border-radius: 0.6rem;
+      font-size: 0.9rem;
+      background: var(--cta-primary);
+      color: white;
+      font-family: monospace;
+    }
+
+    .btn{
+      appearance:none; border:0; cursor:pointer; font-weight:600;
+      padding:.85rem 1.1rem; border-radius:.75rem; transition:.2s ease; color:#fff;
+      display:inline-flex; align-items:center; justify-content:center;
+    }
+    .btn--primary{ background:var(--cta-primary); }
+    .btn--primary:hover{ background:var(--cta-primary-hover); }
+    .btn--ghost{ background:var(--cta-secondary); border:1px solid rgba(255,255,255,.28); }
+    .btn--ghost:hover{ background:var(--cta-secondary-hover); }
+
+    .create-proposal-btn {
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="/" class="brand">UJC</a>
+      <div class="nav__spacer"></div>
+      <div class="nav__links">
+        <a class="chip" href="/platform/projects">Projects</a>
+        <a class="chip" href="/platform/governance" style="background: var(--cta-primary);">Governance</a>
+        <div id="auth-container">
+          <!-- Auth button will be inserted here -->
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <h1 class="section-title">Governance</h1>
+    <p class="section-description">Participate in community decisions through our governance system. Vote on proposals and help shape the future of UJC.</p>
+    
+    <button class="btn btn--primary create-proposal-btn">Create New Proposal</button>
+    
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">3</div>
+        <div class="stat-label">Active Proposals</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">12</div>
+        <div class="stat-label">Total Proposals</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">68%</div>
+        <div class="stat-label">Voter Participation</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">250,000</div>
+        <div class="stat-label">UJC Voting Power</div>
+      </div>
+    </div>
+    
+    <!-- PROPOSALS -->
+    <div class="proposals-container">
+      <h2>Active Proposals</h2>
+      
+      <!-- Proposal 1 -->
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <h3 class="proposal-title">Fund Edinburgh Heritage Restoration Project</h3>
+          <span class="proposal-id">PROP-12</span>
+        </div>
+        <p class="proposal-description">Allocate 15,000 UJC from the treasury to fund the restoration of historical landmarks in Edinburgh's Old Town, preserving cultural heritage for future generations.</p>
+        <div class="proposal-meta">
+          <div class="proposal-meta-item">
+            <span class="proposal-status status-active">Active</span>
+          </div>
+          <div class="proposal-meta-item">
+            <span>Proposed by: 0x7a3B...F92c</span>
+          </div>
+          <div class="proposal-meta-item">
+            <span>Ends in: 3 days</span>
+          </div>
+        </div>
+        <div class="proposal-votes">
+          <div class="vote-bar">
+            <div class="vote-progress">
+              <div class="vote-yes" style="width: 65%;"></div>
+              <div class="vote-no" style="width: 25%;"></div>
+              <div class="vote-abstain" style="width: 10%;"></div>
+            </div>
+          </div>
+          <div class="vote-stats">
+            <div>Yes: 65% (162,500 UJC)</div>
+            <div>No: 25% (62,500 UJC)</div>
+            <div>Abstain: 10% (25,000 UJC)</div>
+          </div>
+        </div>
+        <div class="vote-actions">
+          <button class="vote-btn btn-yes">Vote Yes</button>
+          <button class="vote-btn btn-no">Vote No</button>
+          <button class="vote-btn btn-abstain">Abstain</button>
+        </div>
+      </div>
+      
+      <!-- Proposal 2 -->
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <h3 class="proposal-title">Implement Quarterly Community Rewards</h3>
+          <span class="proposal-id">PROP-11</span>
+        </div>
+        <p class="proposal-description">Establish a quarterly rewards program that distributes 5,000 UJC to active community members based on participation and contributions to the ecosystem.</p>
+        <div class="proposal-meta">
+          <div class="proposal-meta-item">
+            <span class="proposal-status status-active">Active</span>
+          </div>
+          <div class="proposal-meta-item">
+            <span>Proposed by: 0x5f1A...B43e</span>
+          </div>
+          <div class="proposal-meta-item">
+            <span>Ends in: 5 days</span>
+          </div>
+        </div>
+        <div class="proposal-votes">
+          <div class="vote-bar">
+            <div class="vote-progress">
+              <div class="vote-yes" style="width: 72%;"></div>
+              <div class="vote-no" style="width: 18%;"></div>
+              <div class="vote-abstain" style="width: 10%;"></div>
+            </div>
+          </div>
+          <div class="vote-stats">
+            <div>Yes: 72% (180,000 UJC)</div>
+            <div>No: 18% (45,000 UJC)</div>
+            <div>Abstain: 10% (25,000 UJC)</div>
+          </div>
+        </div>
+        <div class="vote-actions">
+          <button class="vote-btn btn-yes">Vote Yes</button>
+          <button class="vote-btn btn-no">Vote No</button>
+          <button class="vote-btn btn-abstain">Abstain</button>
+        </div>
+      </div>
+      
+      <!-- Proposal 3 -->
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <h3 class="proposal-title">Partner with UK Environmental NGOs</h3>
+          <span class="proposal-id">PROP-10</span>
+        </div>
+        <p class="proposal-description">Establish formal partnerships with three leading UK environmental NGOs to collaborate on sustainability projects and increase UJC's impact in environmental conservation.</p>
+        <div class="proposal-meta">
+          <div class="proposal-meta-item">
+            <span class="proposal-status status-active">Active</span>
+          </div>
+          <div class="proposal-meta-item">
+            <span>Proposed by: 0x3c2D...A81f</span>
+          </div>
+          <div class="proposal-meta-item">
+            <span>Ends in: 2 days</span>
+          </div>
+        </div>
+        <div class="proposal-votes">
+          <div class="vote-bar">
+            <div class="vote-progress">
+              <div class="vote-yes" style="width: 58%;"></div>
+              <div class="vote-no" style="width: 32%;"></div>
+              <div class="vote-abstain" style="width: 10%;"></div>
+            </div>
+          </div>
+          <div class="vote-stats">
+            <div>Yes: 58% (145,000 UJC)</div>
+            <div>No: 32% (80,000 UJC)</div>
+            <div>Abstain: 10% (25,000 UJC)</div>
+          </div>
+        </div>
+        <div class="vote-actions">
+          <button class="vote-btn btn-yes">Vote Yes</button>
+          <button class="vote-btn btn-no">Vote No</button>
+          <button class="vote-btn btn-abstain">Abstain</button>
+        </div>
+      </div>
+      
+      <h2>Past Proposals</h2>
+      
+      <!-- Past Proposal 1 -->
+      <div class="proposal-card">
+        <div class="proposal-header">
+          <h3 class="proposal-title">Increase Minimum Proposal Threshold</h3>
+          <span class="proposal-id">PROP-09</span>
+        </div>
+        <p class="proposal-description">Increase the minimum UJC holding required to submit a proposal from 1,000 UJC to 2,500 UJC to ensure higher quality proposals and reduce spam.</p>
+        <div class="proposal-meta">
+          <div class="proposal-meta-item">
+            <span class="proposal-status status-closed">Passed</span>
+          </div>
+          <div class="proposal-meta-item">
+            <span>Proposed by: 0x9e4F...C72d</span>
+          </div>
+          <div class="proposal-meta-item">
+            <span>Ended: 2 weeks ago</span>
+          </div>
+        </div>
+        <div class="proposal-votes">
+          <div class="vote-bar">
+            <div class="vote-progress">
+              <div class="vote-yes" style="width: 82%;"></div>
+              <div class="vote-no" style="width: 12%;"></div>
+              <div class="vote-abstain" style="width: 6%;"></div>
+            </div>
+          </div>
+          <div class="vote-stats">
+            <div>Yes: 82% (205,000 UJC)</div>
+            <div>No: 12% (30,000 UJC)</div>
+            <div>Abstain: 6% (15,000 UJC)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js" type="application/javascript"></script>
+  <script>
+  (() => {
+    // DOM Elements
+    const authContainer = document.getElementById('auth-container');
+    const voteButtons = document.querySelectorAll('.vote-btn');
+    const createProposalBtn = document.querySelector('.create-proposal-btn');
+    
+    // State
+    let currentAccount = null;
+    
+    // Check if MetaMask is installed
+    const isMetaMaskInstalled = () => {
+      return typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask;
+    };
+    
+    // Initialize wallet connection
+    const initWallet = async () => {
+      if (!isMetaMaskInstalled()) {
+        // Redirect to home page if MetaMask is not installed
+        window.location.href = '/';
+        return;
+      }
+      
+      // Check if already connected
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) {
+          handleAccountsChanged(accounts);
+        } else {
+          // Redirect to home page if not connected
+          window.location.href = '/';
+        }
+      } catch (error) {
+        console.error('Error checking accounts:', error);
+        window.location.href = '/';
+      }
+      
+      // Setup ethereum events
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', () => window.location.reload());
+    };
+    
+    // Handle accounts changed
+    const handleAccountsChanged = (accounts) => {
+      if (accounts.length === 0) {
+        // Disconnected - redirect to home
+        window.location.href = '/';
+      } else if (accounts[0] !== currentAccount) {
+        // Connected or changed account
+        currentAccount = accounts[0];
+        const shortAddress = `${currentAccount.substring(0, 6)}...${currentAccount.substring(38)}`;
+        
+        // Update auth container
+        if (authContainer) {
+          authContainer.innerHTML = `<div class="user-address">${shortAddress}</div>`;
+        }
+        
+        // Check if we're on the right network (BNB Chain)
+        checkNetwork();
+      }
+    };
+    
+    // Check if connected to the right network
+    const checkNetwork = async () => {
+      try {
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        // BNB Chain ID is 0x38 (56 in decimal)
+        if (chainId !== '0x38') {
+          alert('Please connect to BNB Smart Chain to use the platform');
+          // Prompt the user to switch networks
+          switchToBNBChain();
+        }
+      } catch (error) {
+        console.error('Error checking network:', error);
+      }
+    };
+    
+    // Switch to BNB Chain
+    const switchToBNBChain = async () => {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x38' }], // BNB Chain ID
+        });
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0x38',
+                chainName: 'BNB Smart Chain',
+                nativeCurrency: {
+                  name: 'BNB',
+                  symbol: 'BNB',
+                  decimals: 18
+                },
+                rpcUrls: ['https://bsc-dataseed.binance.org/'],
+                blockExplorerUrls: ['https://bscscan.com/']
+              }]
+            });
+          } catch (addError) {
+            console.error('Error adding BNB Chain:', addError);
+          }
+        }
+      }
+    };
+    
+    // Setup vote buttons
+    voteButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const proposalId = button.closest('.proposal-card').querySelector('.proposal-id').textContent;
+        const voteType = button.textContent.toLowerCase();
+        
+        alert(`You voted ${voteType} on proposal ${proposalId}. This functionality will be fully implemented in Phase 3.`);
+      });
+    });
+    
+    // Setup create proposal button
+    if (createProposalBtn) {
+      createProposalBtn.addEventListener('click', () => {
+        alert('Create proposal functionality will be implemented in Phase 3');
+      });
+    }
+    
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', initWallet);
+  })();
+  </script>
+</body>
+</html>

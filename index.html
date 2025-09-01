@@ -1,54 +1,663 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="UJC Platform - Discover and support projects across Britain">
-  <meta name="theme-color" content="#0b0c10">
-  <title>UJC Platform - Union Jack Coin</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UJC – Union Jack Coin</title>
+  <meta name="description" content="UJC is a community-powered token funding projects across Britain." />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <!-- Styles are imported in main.js -->
-  <script type="module" crossorigin src="/assets/index-bd2e99c0.js"></script>
-  <link rel="stylesheet" href="/assets/index-284c352b.css">
+  <style>
+    :root{
+      --flag-opacity: 0.6;
+      --carousel-duration: 5000ms;
+      --fade-duration: 1200ms;
+      --fg-text: #ffffff;
+      --fg-muted: #cbd5e1;
+      --fg-soft: #a8b3c7;
+      --bg: #0b0c10;
+      --panel: #14161c;
+      --line: #262a33;
+      --cta-primary: #1f7ae0;
+      --cta-primary-hover: #1863b5;
+      --cta-secondary: rgba(255,255,255,0.12);
+      --cta-secondary-hover: rgba(255,255,255,0.22);
+      --accent: #1f7ae0;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--fg-text); background:var(--bg); overflow-x:hidden;
+      scroll-behavior:smooth;
+    }
+    a{color:#fff; text-decoration:none}
+
+    /* NAV */
+    .nav{
+      position:sticky; top:0; z-index:20; backdrop-filter:saturate(160%) blur(8px);
+      background:linear-gradient(to bottom, rgba(10,11,15,.75), rgba(10,11,15,.35));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .nav__inner{
+      max-width:1200px; margin:0 auto; padding:.6rem 1rem; display:flex; align-items:center; gap:1rem;
+    }
+    .brand{font-weight:800; letter-spacing:.2px}
+    .nav__spacer{flex:1}
+    .nav__links{display:flex; gap:.8rem; flex-wrap:wrap}
+    .chip{
+      padding:.45rem .7rem; border-radius:.6rem; font-size:.9rem; color:#e9eef7;
+      background:var(--cta-secondary); border:1px solid rgba(255,255,255,.18);
+    }
+    .chip:hover{background:var(--cta-secondary-hover)}
+
+    /* HERO */
+    .hero{
+      position:relative; min-height:92svh; display:grid; place-items:center; overflow:hidden;
+    }
+    .hero__video{
+      position:absolute; inset:0; width:100%; height:100%;
+      object-fit:cover; filter:brightness(0.9); opacity:var(--flag-opacity); z-index:1;
+    }
+    .hero__shade{ position:absolute; inset:0; z-index:2;
+      background: radial-gradient(80% 60% at 50% 40%, rgba(0,0,0,0.10), rgba(0,0,0,0.60));
+    }
+    .hero__carousel{ position:absolute; inset:0; z-index:3; pointer-events:none; overflow:hidden; }
+    .hero__slide{
+      position:absolute; inset:0; background-position:center; background-size:cover;
+      opacity:0; transition:opacity var(--fade-duration) ease-in-out;
+      filter: saturate(1.05) contrast(1.05);
+    }
+    .hero__slide.is-active{ opacity:.95; }
+
+    .hero__content{
+      position:relative; z-index:4; text-align:center; padding: clamp(1rem, 4vw, 2rem);
+      max-width:min(1100px, 92vw);
+    }
+    .hero__badge{
+      display:inline-block; padding:.35rem .6rem; font-size:.8rem; letter-spacing:.08em;
+      border:1px solid rgba(255,255,255,.22); border-radius:999px; opacity:.9; margin-bottom:1rem;
+      background:rgba(0,0,0,.25); backdrop-filter: blur(6px);
+    }
+    .hero__title{
+      font-weight:800; line-height:1.05; margin:0 0 .6rem 0;
+      font-size:clamp(2.1rem, 6vw, 4.2rem);
+      text-shadow:0 4px 20px rgba(0,0,0,.45);
+    }
+    .hero__subtitle{
+      margin:0 auto 1.6rem; max-width:62ch; line-height:1.55;
+      color:var(--fg-muted); font-size:clamp(1rem, 2.2vw, 1.2rem);
+      text-shadow:0 2px 16px rgba(0,0,0,.35);
+    }
+    .hero__ctas{display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap}
+
+    .btn{
+      appearance:none; border:0; cursor:pointer; font-weight:600;
+      padding:.85rem 1.1rem; border-radius:.75rem; transition:.2s ease; color:#fff;
+      display:inline-flex; align-items:center; justify-content:center;
+    }
+    .btn--primary{ background:var(--cta-primary); }
+    .btn--primary:hover{ background:var(--cta-primary-hover); }
+    .btn--ghost{ background:var(--cta-secondary); border:1px solid rgba(255,255,255,.28); }
+    .btn--ghost:hover{ background:var(--cta-secondary-hover); }
+
+    .fallback-note{
+      position:absolute; bottom:.5rem; right:.5rem; z-index:5; font-size:.8rem;
+      padding:.35rem .6rem; opacity:.75; background:rgba(0,0,0,.35); border-radius:.5rem;
+    }
+
+    /* SECTIONS */
+    .section{ padding: clamp(2.5rem, 4.5vw, 4rem) 1rem; }
+    .container{ max-width:1100px; margin:0 auto; }
+    h2{ margin:0 0 .8rem; font-size:clamp(1.6rem, 2.8vw, 2.1rem) }
+
+    .lead{ color:var(--fg-muted); line-height:1.6; }
+    .muted{ color:var(--fg-soft) }
+
+    .cards{ display:grid; gap:1rem; grid-template-columns:1fr; }
+    @media (min-width:900px){ .cards{ grid-template-columns:repeat(3, 1fr) } }
+    .card{
+      background:var(--panel); border:1px solid var(--line); border-radius:.9rem; padding:1rem 1rem;
+    }
+    .card h3{ margin:.2rem 0 .35rem; font-size:1.05rem }
+    .card p{ margin:0; color:var(--fg-muted); line-height:1.55 }
+
+    /* Timeline */
+    .timeline{ border-left:2px solid var(--line); padding-left:1rem; margin-left:.35rem; display:grid; gap:.9rem }
+    .t{ position:relative }
+    .t::before{
+      content:""; position:absolute; left:-1.23rem; top:.35rem; width:.65rem; height:.65rem;
+      background:var(--accent); border-radius:50%;
+      box-shadow:0 0 0 4px rgba(31,122,224,.18);
+    }
+
+    /* FAQ accordion */
+    .faq{ display:grid; gap:.6rem }
+    details.faq__item{
+      background:var(--panel); border:1px solid var(--line); border-radius:.8rem; padding:.8rem 1rem;
+    }
+    details summary{
+      cursor:pointer; list-style:none; font-weight:600; outline:none;
+    }
+    details summary::-webkit-details-marker{ display:none }
+    details[open]{ border-color:#2f3642 }
+
+    /* Whitepaper preview panel */
+    .wp{
+      background:var(--panel); border:1px solid var(--line); border-radius:.9rem; padding:1rem;
+    }
+    .wp__frame{
+      width:100%; height:min(72vh, 760px); border:0; border-radius:.6rem; background:#0e1015;
+    }
+
+    /* Footer */
+    .footer{ border-top:1px solid var(--line); color:var(--fg-soft) }
+    .footer a{ color:#e8eefb }
+    .footer__grid{ display:grid; gap:1rem; grid-template-columns:1fr; }
+    @media(min-width:800px){ .footer__grid{ grid-template-columns: 1fr auto } }
+
+    /* --- Treasury styles --- */
+    .treasury { padding: 4rem 1rem; max-width:1100px; margin:0 auto; }
+    .treasury h2 { margin-bottom:.25rem; }
+    .treasury .muted { margin:0 0 1.25rem; }
+    .treasury-grid { display:grid; gap:1rem; grid-template-columns:1fr; }
+    @media (min-width: 900px){ .treasury-grid{ grid-template-columns: 1fr 1fr; } }
+    .treasury-card{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:16px; padding:1rem 1.25rem;
+    }
+    .treasury-addr{
+      font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      letter-spacing:.02em; margin:.35rem 0 .75rem;
+    }
+    .treasury-btns{ display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.5rem; }
+    .treasury-badges{ display:flex; gap:.5rem; flex-wrap:wrap; margin:.5rem 0 1rem; }
+    .treasury-badge{
+      display:inline-block; padding:.35rem .6rem; border-radius:999px;
+      border:1px solid rgba(255,255,255,.18); font-size:.9rem;
+    }
+  </style>
 </head>
 <body>
+
   <!-- NAV -->
   <nav class="nav">
     <div class="nav__inner">
-      <a href="/" class="brand">UJC</a>
+      <div class="brand">UJC</div>
       <div class="nav__spacer"></div>
       <div class="nav__links">
-        <a class="chip" href="/projects">Projects</a>
-        <a class="chip" href="/governance">Governance</a>
-        <div id="auth-container">
-          <!-- Auth button will be inserted here -->
-        </div>
+        <a class="chip" href="#mission">Mission</a>
+        <a class="chip" href="#buy">How to buy</a>
+        <a class="chip" href="#tokenomics">Tokenomics</a>
+        <a class="chip" href="#whitepaper">Whitepaper</a>
+        <a class="chip" href="#treasury">Treasury</a>
+        <a class="chip" href="#roadmap">Roadmap</a>
+        <a class="chip" href="#faq">FAQ</a>
+        <a class="chip" href="/platform" id="platform-link">Platform</a>
+        <button class="chip" id="connect-wallet" style="cursor: pointer; background: var(--cta-primary);">Connect Wallet</button>
       </div>
     </div>
   </nav>
 
-  <!-- MAIN CONTENT -->
-  <div class="main-content">
-    <h1 class="section-title">Welcome to UJC Platform</h1>
-    
-    <div class="card">
-      <h2 class="card-title">Projects</h2>
-      <div class="card-content">
-        <p>Discover and support projects across Britain. Connect your wallet to create your own project or donate to existing ones.</p>
-        <a href="/projects" class="chip">Browse Projects</a>
-      </div>
-    </div>
-    
-    <div class="card">
-      <h2 class="card-title">Governance</h2>
-      <div class="card-content">
-        <p>Participate in community decisions through our governance system. Vote on proposals and help shape the future of UJC.</p>
-        <a href="/governance" class="chip">View Proposals</a>
-      </div>
-    </div>
-  </div>
+  <!-- HERO -->
+  <header class="hero" aria-label="UJC Hero">
+    <video class="hero__video" src="./assets/Union-Jack-Coin.mp4" autoplay muted loop playsinline></video>
+    <div class="hero__shade" aria-hidden="true"></div>
 
-  
+    <div class="hero__carousel" aria-hidden="true"></div>
+
+    <div class="hero__content">
+      <div style="display: flex; align-items: flex-start; justify-content: center; margin-bottom: 1rem; background: rgba(0,0,0,0.25); backdrop-filter: blur(8px); padding: 1.5rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+        <img src="./assets/ujc-black-removebg-preview.png" alt="Union Jack Coin Logo" style="max-width: 100px; height: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); margin-right: 2rem;">
+        <div style="text-align: left;">
+          <h1 class="hero__title" style="margin-top: 0; margin-bottom: 0.5rem;">Union Jack Coin (UJC)</h1>
+          <p class="hero__subtitle" style="margin-top: 0; text-align: left; margin-bottom: 0;">
+            A token of unity funding projects across Britain. Holders propose, vote, and direct the treasury to real-world causes.
+          </p>
+        </div>
+      </div>
+      <div class="hero__ctas">
+        <a class="btn btn--primary" href="#mission">Join the movement</a>
+        <a class="btn btn--ghost" href="#tokenomics">See tokenomics</a>
+        <a class="btn btn--ghost" href="/assets/whitepaper.pdf" target="_blank" rel="noopener">Read whitepaper</a>
+        <a class="btn btn--ghost" id="contractBtn" style="display:none;" target="_blank" rel="noopener">View token contract</a>
+      </div>
+    </div>
+
+    <div class="fallback-note" id="fallbackNote" hidden>
+      Video paused. Showing image gallery.
+    </div>
+  </header>
+
+  <!-- MISSION -->
+  <section class="section" id="mission">
+    <div class="container">
+      <h2>Mission</h2>
+      <p class="lead">
+        UJC gives people a voice and a stake in Britain's future. Through governance and collective funding,
+        holders decide which causes and projects get supported — from local initiatives to national campaigns.
+      </p>
+    </div>
+  </section>
+
+  <!-- HOW TO BUY -->
+  <section class="section" id="buy">
+    <div class="container">
+      <h2>How to buy UJC (testnet → mainnet later)</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>1) Get a wallet</h3>
+          <p>Install MetaMask (desktop or mobile). Keep your seed phrase safe.</p>
+        </div>
+        <div class="card">
+          <h3>2) Add BNB Chain</h3>
+          <p>Switch network to BNB Smart Chain (mainnet). You’ll need a little BNB for gas.</p>
+        </div>
+        <div class="card">
+          <h3>3) Trade for UJC</h3>
+          <p>Use a DEX (e.g., PancakeSwap). Once live, paste the official UJC contract address and swap.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOKENOMICS -->
+  <section class="section" id="tokenomics">
+    <div class="container">
+      <h2>Tokenomics (Overview)</h2>
+      <p class="muted">Fixed supply. Burnable (donation = optional burn). Governance controls treasury deployments.</p>
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <img src="./assets/pie_chart.png" alt="UJC Token Distribution Pie Chart" style="max-width: 100%; height: auto; border-radius: 0.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.25);">
+      </div>
+      <div class="cards">
+        <div class="card">
+          <h3>50% — Treasury</h3>
+          <p>Project funding decided by token-holder votes.</p>
+        </div>
+        <div class="card">
+          <h3>20% — Community</h3>
+          <p>Grants & participation rewards to grow UJC.</p>
+        </div>
+        <div class="card">
+          <h3>10% — Team</h3>
+          <p>Vested allocation to build & ship responsibly.</p>
+        </div>
+        <div class="card">
+          <h3>10% — Marketing</h3>
+          <p>Partnerships, awareness, listings, education.</p>
+        </div>
+        <div class="card">
+          <h3>10% — Reserve</h3>
+          <p>Safety buffer & strategic opportunities.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHITEPAPER -->
+  <section class="section" id="whitepaper">
+    <div class="container">
+      <h2>Whitepaper</h2>
+      <div class="wp">
+        <iframe class="wp__frame" id="wpFrame" title="UJC Whitepaper (PDF preview)"></iframe>
+        <p class="muted" id="wpNote" style="margin:.8rem 0 0">
+          If the PDF preview doesn't load, you can
+          <a href="/assets/whitepaper.pdf" target="_blank" rel="noopener">download the whitepaper here</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TREASURY -->
+  <section id="treasury" class="treasury">
+    <h2>Treasury</h2>
+    <p class="muted">The UnionJackCoin treasury is a multi-sig Safe on BNB Chain. Balances below refresh from chain.</p>
+
+    <div class="treasury-grid">
+      <!-- Address + links -->
+      <div class="treasury-card">
+        <h3>Address</h3>
+        <div class="treasury-addr" id="treasury-address">0x4d0A…3Ef4</div>
+        <div class="treasury-btns">
+          <button class="btn btn--ghost" id="copy-safe">Copy address</button>
+          <a class="btn btn--ghost" target="_blank" rel="noopener"
+             href="https://bscscan.com/address/0x4d0AF0A62e3C72Bb6a8030B84A2c6f2f21803Ef4">View on BscScan</a>
+          <a class="btn btn--ghost" target="_blank" rel="noopener"
+             href="https://app.safe.global/home?safe=bnb:0x4d0AF0A62e3C72Bb6a8030B84A2c6f2f21803Ef4">Open in Safe</a>
+        </div>
+        <p class="muted" style="margin-top:.75rem">Safe: <strong>UnionJackCoin</strong> (BNB Chain)</p>
+      </div>
+
+      <!-- Live balances -->
+      <div class="treasury-card">
+        <h3>Balances (live)</h3>
+        <div class="treasury-badges">
+          <span class="treasury-badge">BNB: <span id="treasury-bnb">—</span></span>
+          <span class="treasury-badge">USDC: <span id="treasury-usdc">—</span></span>
+        </div>
+        <button class="btn btn--primary" id="refresh-bal">Refresh</button>
+        <p class="muted" style="margin-top:.5rem">Data updates on load and every 60s via a public BNB RPC.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section class="section" id="roadmap">
+    <div class="container">
+      <h2>Roadmap</h2>
+      <div class="timeline">
+        <div class="t">
+          <strong>Phase 1 — Foundation</strong>
+          <div class="muted">Site, brand, token contract (fixed supply + burn), initial community.</div>
+        </div>
+        <div class="t">
+          <strong>Phase 2 — Launch</strong>
+          <div class="muted">DEX listing, fair distribution mechanics, first governance vote.</div>
+        </div>
+        <div class="t">
+          <strong>Phase 3 — Grants & Causes</strong>
+          <div class="muted">Open submissions, voting cycles, transparent funding reports.</div>
+        </div>
+        <div class="t">
+          <strong>Phase 4 — Expansion</strong>
+          <div class="muted">Partnerships, audits, centralized exchange listings (as appropriate).</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="container">
+      <h2>FAQ</h2>
+      <div class="faq">
+        <details class="faq__item">
+          <summary>Is UJC an investment?</summary>
+          <div class="muted">UJC is a community token with governance features. Nothing here is financial advice—always DYOR.</div>
+        </details>
+        <details class="faq__item">
+          <summary>How does burning work?</summary>
+          <div class="muted">Holders can choose to burn tokens (donate power) reducing total supply—benefiting remaining holders by scarcity.</div>
+        </details>
+        <details class="faq__item">
+          <summary>How are projects funded?</summary>
+          <div class="muted">Funds are allocated from the treasury after governance votes. Proposals outline goals, budget and proof-of-impact.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="section footer">
+    <div class="container footer__grid">
+      <div>© <span id="year"></span> UJC — Union Jack Coin | <a href="mailto:mark@itcambridge.co.uk">mark@itcambridge.co.uk</a></div>
+      <div style="display:flex; gap:.75rem; flex-wrap:wrap">
+        <a href="#" class="chip">Twitter/X</a>
+        <a href="#" class="chip">Telegram</a>
+        <a href="#" class="chip">Discord</a>
+        <a href="https://github.com/itcambridge/ujc" class="chip" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ============ CONFIG ============ */
+    const imagePaths = [
+      "./assets/Belfast.png",
+      "./assets/Big_Ben.png",
+      "./assets/Cardiff.png",
+      "./assets/cornwall.png",
+      "./assets/dorset.png",
+      "./assets/Edinburgh.png",
+      "./assets/Tower_Bridge.png",
+    ];
+
+    // Set this when you deploy mainnet:
+    const UJC_MAINNET = ""; // e.g. "0xABCDEF0123..."
+
+    /* ============ HERO CAROUSEL ============ */
+    const carousel = document.querySelector('.hero__carousel');
+    const slides = imagePaths.map((src, i) => {
+      const d = document.createElement('div');
+      d.className = 'hero__slide' + (i === 0 ? ' is-active' : '');
+      d.style.backgroundImage = `url("${src}")`;
+      carousel.appendChild(d);
+      return d;
+    });
+
+    let i = 0;
+    setInterval(() => {
+      const cur = slides[i];
+      const next = slides[(i + 1) % slides.length];
+      cur.classList.remove('is-active');
+      next.classList.add('is-active');
+      i = (i + 1) % slides.length;
+    }, parseInt(getComputedStyle(document.documentElement)
+        .getPropertyValue('--carousel-duration')) || 5000);
+
+    /* ============ VIDEO AUTOPLAY FALLBACK ============ */
+    const video = document.querySelector('.hero__video');
+    const fallbackNote = document.getElementById('fallbackNote');
+    if (video) {
+      const p = video.play();
+      if (p && typeof p.then === 'function') {
+        p.catch(() => { video.style.display='none'; fallbackNote.hidden=false; });
+      }
+    }
+
+    /* ============ CONTRACT BUTTON (auto) ============ */
+    (function showContractBtn(){
+      if (!UJC_MAINNET) return;
+      const btn = document.getElementById('contractBtn');
+      if (!btn) return;
+      btn.href = `https://bscscan.com/token/${UJC_MAINNET}`;
+      btn.style.display = 'inline-flex';
+    })();
+
+    /* ============ WHITEPAPER PREVIEW ============ */
+    (function loadWhitepaper(){
+      const frame = document.getElementById('wpFrame');
+      if (!frame) return;
+      // Setting src late prevents some browsers from blocking the embed on initial paint
+      frame.src = "/assets/whitepaper.pdf#view=FitH&toolbar=1&navpanes=0";
+    })();
+
+    /* ============ FOOTER YEAR ============ */
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+  <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js" type="application/javascript"></script>
+  <script>
+  (() => {
+    const SAFE_ADDR = "0x4d0AF0A62e3C72Bb6a8030B84A2c6f2f21803Ef4";
+    const USDC_ADDR = "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"; // BSC-Peg USDC
+    const provider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org");
+
+    // Show a compact address immediately
+    const addrEl = document.getElementById("treasury-address");
+    if (addrEl) addrEl.textContent = SAFE_ADDR.slice(0,6) + "…" + SAFE_ADDR.slice(-4);
+
+    async function refreshBalances(){
+      const bnbEl  = document.getElementById("treasury-bnb");
+      const usdcEl = document.getElementById("treasury-usdc");
+      if (bnbEl)  bnbEl.textContent  = "…";
+      if (usdcEl) usdcEl.textContent = "…";
+
+      try {
+        const erc20 = new ethers.Contract(
+          USDC_ADDR,
+          [
+            "function balanceOf(address) view returns (uint256)",
+            "function decimals() view returns (uint8)",
+            "function symbol() view returns (string)"
+          ],
+          provider
+        );
+
+        const [bnbWei, usdcRaw, dec, sym] = await Promise.all([
+          provider.getBalance(SAFE_ADDR),
+          erc20.balanceOf(SAFE_ADDR),
+          erc20.decimals(),
+          erc20.symbol()
+        ]);
+
+        const bnb  = Number(ethers.utils.formatEther(bnbWei));
+        const usdc = Number(ethers.utils.formatUnits(usdcRaw, dec));
+
+        if (bnbEl)  bnbEl.textContent  = bnb.toFixed(6)  + " BNB";
+        if (usdcEl) usdcEl.textContent = usdc.toFixed(4) + " " + sym;
+      } catch (e) {
+        console.error("Treasury refresh error:", e);
+        if (bnbEl)  bnbEl.textContent  = "unavailable";
+        if (usdcEl) usdcEl.textContent = "unavailable";
+      }
+    }
+
+    document.getElementById("copy-safe")?.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(SAFE_ADDR); alert("Address copied"); } catch {}
+    });
+    document.getElementById("refresh-bal")?.addEventListener("click", refreshBalances);
+
+    window.addEventListener("DOMContentLoaded", refreshBalances);
+    setInterval(refreshBalances, 60_000);
+  })();
+  </script>
+
+  <!-- Wallet Connection Script -->
+  <script>
+  (() => {
+    // DOM Elements
+    const connectWalletBtn = document.getElementById('connect-wallet');
+    const platformLink = document.getElementById('platform-link');
+    
+    // State
+    let currentAccount = null;
+    let provider = null;
+    
+    // Check if MetaMask is installed
+    const isMetaMaskInstalled = () => {
+      return typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask;
+    };
+    
+    // Initialize wallet connection
+    const initWallet = async () => {
+      if (!isMetaMaskInstalled()) {
+        connectWalletBtn.textContent = 'Install MetaMask';
+        connectWalletBtn.addEventListener('click', () => {
+          window.open('https://metamask.io/download.html', '_blank');
+        });
+        return;
+      }
+      
+      // Check if already connected
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) {
+          handleAccountsChanged(accounts);
+        }
+      } catch (error) {
+        console.error('Error checking accounts:', error);
+      }
+      
+      // Setup connect wallet button
+      connectWalletBtn.addEventListener('click', connectWallet);
+      
+      // Setup ethereum events
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', () => window.location.reload());
+    };
+    
+    // Connect wallet
+    const connectWallet = async () => {
+      try {
+        const accounts = await window.ethereum.request({ 
+          method: 'eth_requestAccounts' 
+        });
+        handleAccountsChanged(accounts);
+      } catch (error) {
+        console.error('Error connecting wallet:', error);
+      }
+    };
+    
+    // Handle accounts changed
+    const handleAccountsChanged = (accounts) => {
+      if (accounts.length === 0) {
+        // Disconnected
+        currentAccount = null;
+        connectWalletBtn.textContent = 'Connect Wallet';
+        platformLink.style.display = 'none';
+      } else if (accounts[0] !== currentAccount) {
+        // Connected or changed account
+        currentAccount = accounts[0];
+        const shortAddress = `${currentAccount.substring(0, 6)}...${currentAccount.substring(38)}`;
+        connectWalletBtn.textContent = shortAddress;
+        platformLink.style.display = 'inline-flex';
+        
+        // Check if we're on the right network (BNB Chain)
+        checkNetwork();
+      }
+    };
+    
+    // Check if connected to the right network
+    const checkNetwork = async () => {
+      try {
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        // BNB Chain ID is 0x38 (56 in decimal)
+        if (chainId !== '0x38') {
+          alert('Please connect to BNB Smart Chain to use the platform');
+          // Optionally, you can prompt the user to switch networks
+          switchToBNBChain();
+        }
+      } catch (error) {
+        console.error('Error checking network:', error);
+      }
+    };
+    
+    // Switch to BNB Chain
+    const switchToBNBChain = async () => {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x38' }], // BNB Chain ID
+        });
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0x38',
+                chainName: 'BNB Smart Chain',
+                nativeCurrency: {
+                  name: 'BNB',
+                  symbol: 'BNB',
+                  decimals: 18
+                },
+                rpcUrls: ['https://bsc-dataseed.binance.org/'],
+                blockExplorerUrls: ['https://bscscan.com/']
+              }]
+            });
+          } catch (addError) {
+            console.error('Error adding BNB Chain:', addError);
+          }
+        }
+      }
+    };
+    
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      initWallet();
+      
+      // Initially hide the platform link until connected
+      if (platformLink) {
+        platformLink.style.display = 'none';
+      }
+    });
+  })();
+  </script>
 </body>
 </html>
