@@ -8,6 +8,7 @@ This repository contains the code for the Union Jack Coin (UJC) MVP platform.
 - `/supabase` - Supabase database migrations and configuration
 - `/supabase/migrations` - SQL migrations for database setup
 - `/functions` - Edge Functions for verification and secure operations
+- `/deploy` - Built files ready for deployment (created by build script)
 
 ## Environment Setup
 
@@ -15,7 +16,7 @@ This repository contains the code for the Union Jack Coin (UJC) MVP platform.
 
 - Node.js (v16+)
 - npm or yarn
-- Supabase CLI
+- Supabase CLI (optional, for Edge Functions)
 
 ### Environment Variables
 
@@ -41,6 +42,8 @@ For production, set these as environment secrets in your hosting platform.
 1. Install dependencies:
    ```
    npm install
+   cd web
+   npm install
    ```
 
 2. Run database migrations:
@@ -50,12 +53,53 @@ For production, set these as environment secrets in your hosting platform.
 
 3. Start the development server:
    ```
+   cd web
    npm run dev
    ```
 
+## Deployment
+
+### Local Build
+
+1. Run the build script:
+   - On Windows: `deploy.bat`
+   - On Linux/Mac: `bash deploy.sh`
+
+2. This will:
+   - Install dependencies
+   - Build the web application
+   - Create a `deploy` directory with all the files needed for deployment
+   - Backup the original `index.html` to `index.htmlold`
+   - Copy the built `index.html` to the root directory
+
+3. Commit and push the changes to GitHub
+
+### Server Deployment
+
+1. Pull the latest changes on the server:
+   ```
+   cd ~/ukx
+   git pull
+   ```
+
+2. Run the server deployment script:
+   ```
+   bash server-deploy.sh
+   ```
+
+3. This will:
+   - Pull the latest changes from GitHub
+   - Backup the current web root
+   - Copy the deploy directory contents to the web root
+
+Alternatively, you can manually copy the files:
+```
+cp -r deploy/* /var/www/ukx/
+```
+
 ### Edge Functions
 
-Deploy Edge Functions:
+Deploy Edge Functions (requires Supabase CLI):
 ```
 npm run functions:deploy
 ```
